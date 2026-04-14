@@ -6,7 +6,7 @@ interface Props {
   height?: number
 }
 
-function EarningsCalendarInner({ height = 400 }: Props) {
+function EarningsCalendarWidget({ height = 400 }: Props) {
   const ref = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -44,5 +44,4 @@ function EarningsCalendarInner({ height = 400 }: Props) {
   )
 }
 
-import dynamic from 'next/dynamic'
-export default dynamic(() => Promise.resolve(memo(EarningsCalendarInner)), { ssr: false })
+export default memo(EarningsCalendarWidget)

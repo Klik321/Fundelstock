@@ -1,13 +1,12 @@
 'use client'
 
 import { memo, useEffect, useRef } from 'react'
-import dynamic from 'next/dynamic'
 
 interface Props {
   height?: number
 }
 
-function EconomicCalendarInner({ height = 400 }: Props) {
+function EconomicCalendarWidget({ height = 400 }: Props) {
   const ref = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -45,4 +44,4 @@ function EconomicCalendarInner({ height = 400 }: Props) {
   )
 }
 
-export default dynamic(() => Promise.resolve(memo(EconomicCalendarInner)), { ssr: false })
+export default memo(EconomicCalendarWidget)

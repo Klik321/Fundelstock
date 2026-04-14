@@ -49,12 +49,12 @@ export default function SearchModal() {
     }
   }, [open])
 
-  // ⌘K / Ctrl+K global shortcut
+  // ⌘K / Ctrl+K global shortcut (handled here as backup; Header also handles it)
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault()
-        open ? closeSearch() : useSearch
+        if (open) closeSearch()
       }
     }
     document.addEventListener('keydown', handler)

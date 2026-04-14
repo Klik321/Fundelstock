@@ -1,13 +1,12 @@
 'use client'
 
 import { memo, useEffect, useRef } from 'react'
-import dynamic from 'next/dynamic'
 
 interface Props {
   height?: number
 }
 
-function ForexWidgetInner({ height = 400 }: Props) {
+function ForexWidgetComponent({ height = 400 }: Props) {
   const ref = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -44,4 +43,4 @@ function ForexWidgetInner({ height = 400 }: Props) {
   )
 }
 
-export default dynamic(() => Promise.resolve(memo(ForexWidgetInner)), { ssr: false })
+export default memo(ForexWidgetComponent)
