@@ -97,6 +97,11 @@ const config: Config = {
         'fade-in': 'fadeIn 0.35s ease-out forwards',
         ticker: 'ticker 60s linear infinite',
         shimmer: 'shimmer 1.6s ease-in-out infinite',
+        float1: 'float1 18s ease-in-out infinite',
+        float2: 'float2 24s ease-in-out infinite',
+        float3: 'float3 20s ease-in-out infinite',
+        'gradient-shift': 'gradientShift 8s ease-in-out infinite',
+        'spin-slow': 'spin 30s linear infinite',
       },
 
       keyframes: {
@@ -119,6 +124,25 @@ const config: Config = {
         shimmer: {
           '0%': { backgroundPosition: '-200% 0' },
           '100%': { backgroundPosition: '200% 0' },
+        },
+        float1: {
+          '0%, 100%': { transform: 'translate(0px, 0px) scale(1)' },
+          '25%': { transform: 'translate(40px, -30px) scale(1.05)' },
+          '50%': { transform: 'translate(20px, 20px) scale(0.97)' },
+          '75%': { transform: 'translate(-25px, -15px) scale(1.03)' },
+        },
+        float2: {
+          '0%, 100%': { transform: 'translate(0px, 0px) scale(1)' },
+          '33%': { transform: 'translate(-35px, 25px) scale(1.04)' },
+          '66%': { transform: 'translate(30px, -20px) scale(0.96)' },
+        },
+        float3: {
+          '0%, 100%': { transform: 'translate(0px, 0px) scale(1)' },
+          '50%': { transform: 'translate(20px, -35px) scale(1.06)' },
+        },
+        gradientShift: {
+          '0%, 100%': { backgroundPosition: '0% 50%' },
+          '50%': { backgroundPosition: '100% 50%' },
         },
       },
     },

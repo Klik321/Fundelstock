@@ -4,6 +4,7 @@ import './globals.css'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import CookieBanner from '@/components/layout/CookieBanner'
+import FloatingOrbs from '@/components/ui/FloatingOrbs'
 import QueryProvider from '@/providers/QueryProvider'
 import { SITE_NAME, SITE_URL, SITE_DESCRIPTION } from '@/lib/constants'
 
@@ -64,10 +65,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`${dmSans.variable} ${ibmPlexMono.variable} dark`}
     >
       <body>
+        <FloatingOrbs />
         <QueryProvider>
           <Header />
           {/* Content padded below the fixed header + ticker tape */}
-          <main className="pt-16 min-h-screen">{children}</main>
+          <main className="relative z-10 pt-16 min-h-screen">{children}</main>
           <Footer />
           <CookieBanner />
         </QueryProvider>
