@@ -56,7 +56,7 @@ export async function GET(request: NextRequest) {
           (a.summary ?? '').toLowerCase().includes(lowerQ) ||
           a.source.toLowerCase().includes(lowerQ),
       )
-      data.total = data.articles.length
+      data.totalResults = data.articles.length
     }
 
     return NextResponse.json(data, {

@@ -1,11 +1,11 @@
 /**
- * Server-side news fetching with multi-provider fallback strategy:
- *   1. Finnhub (primary — market news with sector filter)
- *   2. NewsAPI (secondary — keyword search)
- *   3. Mock data (fallback when no API keys are configured)
+ * Server-side news fetching — dual-provider parallel strategy:
+ *   1. Finnhub (primary — real-time market news)
+ *   2. NewsAPI (secondary — top financial headlines)
+ *   Both run in parallel and results are merged + deduplicated.
+ *   3. Mock data fallback when neither key is configured.
  *
- * All functions run server-side only (API routes / RSC).
- * Never expose API keys to the client.
+ * All functions run server-side only. API keys are NEVER sent to the client.
  */
 
 import type { NewsArticle, NewsFeedResponse } from '@/types/news'
@@ -14,7 +14,7 @@ import { cache, NEWS_TTL_MS } from '@/lib/cache'
 import { MAX_NEWS_PER_REQUEST } from '@/lib/constants'
 import { SECTORS } from '@/data/sectors'
 
-// ── Type guards for external API payloads ───────────────────────────────────
+// ── External API payload shapes ─────────────────────────────────────────────
 
 interface FinnhubRaw {
   id: number
@@ -39,7 +39,8 @@ interface NewsApiRaw {
 
 // ── Mappers ─────────────────────────────────────────────────────────────────
 
-function mapFinnhub(raw: FinnhubRaw): NewsArticle {
+function mapFinnhub(raw: FinnhubRaw): NewsArticle | null {
+  if (!raw.headline || !raw.url) return null
   const publishedAt = new Date(raw.datetime * 1000).toISOString()
   const { sectors, indices } = tagArticle(raw.headline, raw.summary)
   return {
@@ -57,7 +58,8 @@ function mapFinnhub(raw: FinnhubRaw): NewsArticle {
   }
 }
 
-function mapNewsApi(raw: NewsApiRaw, idx: number): NewsArticle {
+function mapNewsApi(raw: NewsApiRaw, idx: number): NewsArticle | null {
+  if (!raw.title || raw.title.includes('[Removed]') || !raw.url) return null
   const { sectors, indices } = tagArticle(raw.title, raw.description ?? '')
   return {
     id: `na-${idx}-${raw.url.slice(-12)}`,
@@ -91,7 +93,10 @@ async function fetchFromFinnhub(category = 'general'): Promise<NewsArticle[]> {
     )
     if (!res.ok) return []
     const raw = (await res.json()) as FinnhubRaw[]
-    const articles = raw.slice(0, 60).map(mapFinnhub)
+    const articles = raw
+      .slice(0, 60)
+      .map(mapFinnhub)
+      .filter((a): a is NewsArticle => a !== null)
     cache.set(cacheKey, articles, NEWS_TTL_MS)
     return articles
   } catch {
@@ -101,28 +106,44 @@ async function fetchFromFinnhub(category = 'general'): Promise<NewsArticle[]> {
 
 // ── NewsAPI fetch ────────────────────────────────────────────────────────────
 
-async function fetchFromNewsApi(query: string): Promise<NewsArticle[]> {
+const NEWSAPI_FINANCE_SOURCES =
+  'bloomberg,financial-times,the-wall-street-journal,reuters,cnbc,fortune,business-insider,the-economist'
+
+async function fetchFromNewsApi(query?: string): Promise<NewsArticle[]> {
   const key = process.env.NEWSAPI_KEY
   if (!key) return []
 
-  const cacheKey = `newsapi:${query}`
+  const cacheKey = `newsapi:${query ?? 'top'}`
   const cached = cache.get<NewsArticle[]>(cacheKey)
   if (cached) return cached
 
   try {
-    const url = new URL('https://newsapi.org/v2/everything')
-    url.searchParams.set('q', query)
-    url.searchParams.set('sortBy', 'publishedAt')
-    url.searchParams.set('language', 'en')
-    url.searchParams.set('pageSize', '20')
+    let url: URL
+
+    if (query) {
+      // Keyword search via /everything
+      url = new URL('https://newsapi.org/v2/everything')
+      url.searchParams.set('q', query)
+      url.searchParams.set('sortBy', 'publishedAt')
+      url.searchParams.set('language', 'en')
+      url.searchParams.set('pageSize', '30')
+    } else {
+      // Top financial headlines via /top-headlines
+      url = new URL('https://newsapi.org/v2/top-headlines')
+      url.searchParams.set('category', 'business')
+      url.searchParams.set('language', 'en')
+      url.searchParams.set('pageSize', '40')
+    }
     url.searchParams.set('apiKey', key)
 
     const res = await fetch(url.toString(), { next: { revalidate: 300 } })
     if (!res.ok) return []
     const data = await res.json()
-    const articles = (data.articles as NewsApiRaw[])
-      .filter((a) => a.title && a.url && !a.title.includes('[Removed]'))
-      .map(mapNewsApi)
+
+    const articles = ((data.articles ?? []) as NewsApiRaw[])
+      .map((a, i) => mapNewsApi(a, i))
+      .filter((a): a is NewsArticle => a !== null)
+
     cache.set(cacheKey, articles, NEWS_TTL_MS)
     return articles
   } catch {
@@ -130,20 +151,42 @@ async function fetchFromNewsApi(query: string): Promise<NewsArticle[]> {
   }
 }
 
-// ── Mock data ────────────────────────────────────────────────────────────────
+// ── Merge + deduplicate ──────────────────────────────────────────────────────
+
+function mergeArticles(a: NewsArticle[], b: NewsArticle[]): NewsArticle[] {
+  const seen = new Set<string>()
+  const result: NewsArticle[] = []
+
+  for (const article of [...a, ...b]) {
+    // Deduplicate by URL (normalised) and headline prefix (catches reposts)
+    const urlKey = article.url.replace(/[?#].*$/, '').toLowerCase()
+    const headlineKey = article.headline.slice(0, 60).toLowerCase()
+    const key = `${urlKey}|${headlineKey}`
+
+    if (!seen.has(key)) {
+      seen.add(key)
+      result.push(article)
+    }
+  }
+
+  // Sort newest first
+  return result.sort(
+    (x, y) => new Date(y.publishedAt).getTime() - new Date(x.publishedAt).getTime(),
+  )
+}
+
+// ── Mock data (used when neither API key is configured) ──────────────────────
 
 function getMockArticles(sectorSlug?: string, limit = 10): NewsArticle[] {
-  const sector = sectorSlug
-    ? SECTORS.find((s) => s.slug === sectorSlug)
-    : null
+  const sector = sectorSlug ? SECTORS.find((s) => s.slug === sectorSlug) : null
   const sectorName = sector?.name ?? 'Financial Markets'
   const sources = ['Reuters', 'Bloomberg', 'CNBC', 'Financial Times', 'MarketWatch', 'WSJ']
   const now = Date.now()
 
   return Array.from({ length: limit }).map((_, i) => ({
     id: `mock-${sectorSlug ?? 'general'}-${i}`,
-    headline: `[Add API key] Sample ${sectorName} headline — configure FINNHUB_API_KEY in .env.local`,
-    summary: `This is placeholder content. Add your free Finnhub API key to .env.local to see real ${sectorName} news in real time.`,
+    headline: `[Configure API keys] Sample ${sectorName} headline — add FINNHUB_API_KEY to .env.local`,
+    summary: `Placeholder content. Add your Finnhub and NewsAPI keys to .env.local to see real ${sectorName} news.`,
     source: sources[i % sources.length],
     url: 'https://finnhub.io',
     publishedAt: new Date(now - i * 1_800_000).toISOString(),
@@ -157,7 +200,8 @@ function getMockArticles(sectorSlug?: string, limit = 10): NewsArticle[] {
 // ── Public API ───────────────────────────────────────────────────────────────
 
 /**
- * Fetch general market news, optionally filtered by sector or index slug.
+ * Fetch market news, optionally filtered by sector or index slug.
+ * Runs Finnhub and NewsAPI in parallel, merges and deduplicates the results.
  */
 export async function fetchNews(opts: {
   sectorSlug?: string
@@ -167,20 +211,23 @@ export async function fetchNews(opts: {
 }): Promise<NewsFeedResponse> {
   const { sectorSlug, indexSlug, page = 1, limit = MAX_NEWS_PER_REQUEST } = opts
 
-  // Build the search query for keyword-based sources
-  const sectorKw = sectorSlug
-    ? SECTORS.find((s) => s.slug === sectorSlug)?.keywords.slice(0, 3).join(' ') ?? sectorSlug
-    : ''
-  const query = sectorKw || indexSlug || 'stock market finance'
+  // Build keyword query for NewsAPI
+  const sectorKeywords = sectorSlug
+    ? SECTORS.find((s) => s.slug === sectorSlug)?.keywords.slice(0, 3).join(' OR ') ?? sectorSlug
+    : undefined
 
-  // Try providers in order
-  let articles: NewsArticle[] = await fetchFromFinnhub('general')
+  const newsApiQuery = sectorKeywords ?? indexSlug ?? undefined
 
-  if (articles.length === 0) {
-    articles = await fetchFromNewsApi(query)
-  }
+  // ── Run both providers in parallel ──
+  const [finnhubArticles, newsApiArticles] = await Promise.all([
+    fetchFromFinnhub('general'),
+    fetchFromNewsApi(newsApiQuery),
+  ])
 
-  // Filter by sector/index if requested
+  // Merge + deduplicate, newest first
+  let articles = mergeArticles(finnhubArticles, newsApiArticles)
+
+  // Filter by sector/index when requested
   if (sectorSlug) {
     articles = articles.filter(
       (a) => a.sectors.includes(sectorSlug) || a.sectors.length === 0,
@@ -192,30 +239,30 @@ export async function fetchNews(opts: {
     )
   }
 
-  // Fallback to mock data
+  // Fallback to mock data only when both APIs are unconfigured
   if (articles.length === 0) {
     articles = getMockArticles(sectorSlug, limit)
   }
 
+  const total = articles.length
   const start = (page - 1) * limit
   const paged = articles.slice(start, start + limit)
 
   return {
     articles: paged,
-    totalResults: articles.length,
+    totalResults: total,
     page,
     pageSize: limit,
   }
 }
 
 /**
- * Fetch the 5 most recent breaking/fresh articles.
+ * Fetch the most recent breaking articles (up to 5).
  */
 export async function fetchBreakingNews(): Promise<NewsArticle[]> {
-  const { articles } = await fetchNews({ limit: 60 })
+  const { articles } = await fetchNews({ limit: 80 })
   const breaking = articles.filter((a) => a.breaking)
   if (breaking.length >= 3) return breaking.slice(0, 5)
-  // Fall back to most recent 5 articles
   return articles
     .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())
     .slice(0, 5)
