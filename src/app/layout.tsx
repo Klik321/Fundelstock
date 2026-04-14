@@ -5,7 +5,11 @@ import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import CookieBanner from '@/components/layout/CookieBanner'
 import FloatingOrbs from '@/components/ui/FloatingOrbs'
+import ServiceWorkerInit from '@/components/ui/ServiceWorkerInit'
 import QueryProvider from '@/providers/QueryProvider'
+import { ThemeProvider } from '@/providers/ThemeProvider'
+import { WatchlistProvider } from '@/providers/WatchlistProvider'
+import { SearchProvider } from '@/providers/SearchProvider'
 import { SITE_NAME, SITE_URL, SITE_DESCRIPTION } from '@/lib/constants'
 
 // ── Fonts ──────────────────────────────────────────────────────────────────
@@ -35,6 +39,12 @@ export const metadata: Metadata = {
     'stock market news', 'fundamental trading', 'sector news', 'market events',
     'trading news', 'financial news', 'S&P 500', 'NASDAQ', 'indices',
   ],
+  manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: SITE_NAME,
+  },
   openGraph: {
     type: 'website',
     locale: 'en_US',
@@ -62,17 +72,24 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang="en"
-      className={`${dmSans.variable} ${ibmPlexMono.variable} dark`}
+      className={`${dmSans.variable} ${ibmPlexMono.variable}`}
+      data-theme="dark"
     >
       <body>
-        <FloatingOrbs />
-        <QueryProvider>
-          <Header />
-          {/* Content padded below the fixed header + ticker tape */}
-          <main className="relative z-10 pt-16 min-h-screen">{children}</main>
-          <Footer />
-          <CookieBanner />
-        </QueryProvider>
+        <ThemeProvider>
+          <WatchlistProvider>
+            <SearchProvider>
+              <QueryProvider>
+                <FloatingOrbs />
+                <Header />
+                <main className="relative z-10 pt-16 min-h-screen">{children}</main>
+                <Footer />
+                <CookieBanner />
+                <ServiceWorkerInit />
+              </QueryProvider>
+            </SearchProvider>
+          </WatchlistProvider>
+        </ThemeProvider>
       </body>
     </html>
   )

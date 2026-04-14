@@ -36,13 +36,29 @@ export async function GET(request: NextRequest) {
   const rawSector = searchParams.get('sector') ?? undefined
   const rawIndex = searchParams.get('index') ?? undefined
   const rawLimit = parseInt(searchParams.get('limit') ?? '20', 10)
+  const rawQ = searchParams.get('q') ?? undefined
 
   const sectorSlug = rawSector?.replace(/[^a-z0-9-]/gi, '').slice(0, 60)
   const indexSlug = rawIndex?.replace(/[^a-z0-9-]/gi, '').slice(0, 60)
+  // Strip HTML and limit search query to 100 chars
+  const searchQuery = rawQ?.replace(/<[^>]*>/g, '').trim().slice(0, 100)
   const limit = Math.min(Math.max(1, isNaN(rawLimit) ? 20 : rawLimit), 50)
 
   try {
     const data = await fetchNews({ sectorSlug, indexSlug, limit })
+
+    // Client-side text filter when a search query is provided
+    if (searchQuery) {
+      const lowerQ = searchQuery.toLowerCase()
+      data.articles = data.articles.filter(
+        (a) =>
+          a.headline.toLowerCase().includes(lowerQ) ||
+          (a.summary ?? '').toLowerCase().includes(lowerQ) ||
+          a.source.toLowerCase().includes(lowerQ),
+      )
+      data.total = data.articles.length
+    }
+
     return NextResponse.json(data, {
       headers: {
         'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600',

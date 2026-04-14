@@ -3,20 +3,28 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Activity, ChevronDown, Menu } from 'lucide-react'
+import { Activity, ChevronDown, Menu, Search, TrendingUp } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { SECTORS } from '@/data/sectors'
-import SearchBar from '@/components/ui/SearchBar'
+import { useSearch } from '@/providers/SearchProvider'
+import ThemeToggle from '@/components/ui/ThemeToggle'
+import NotificationBell from '@/components/notifications/NotificationBell'
 import MobileNav from './MobileNav'
+import dynamic from 'next/dynamic'
+
+// Heavy modal — client only
+const SearchModal = dynamic(() => import('@/components/search/SearchModal'), { ssr: false })
 
 const NAV_LINKS = [
   { href: '/', label: 'Home' },
   { href: '/news', label: 'News' },
   { href: '/indices', label: 'Indices' },
+  { href: '/portfolio', label: 'Portfolio' },
 ]
 
 export default function Header() {
   const pathname = usePathname()
+  const { openSearch } = useSearch()
   const [scrolled, setScrolled] = useState(false)
   const [sectorsOpen, setSectorsOpen] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -26,6 +34,18 @@ export default function Header() {
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
+
+  // ⌘K global shortcut
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault()
+        openSearch()
+      }
+    }
+    document.addEventListener('keydown', handler)
+    return () => document.removeEventListener('keydown', handler)
+  }, [openSearch])
 
   // Close dropdowns on route change
   useEffect(() => {
@@ -45,7 +65,7 @@ export default function Header() {
         )}
       >
         <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
-          <div className="flex h-16 items-center justify-between gap-4">
+          <div className="flex h-16 items-center justify-between gap-3">
 
             {/* ── Logo ── */}
             <Link href="/" className="flex items-center gap-2.5 shrink-0 group">
@@ -62,7 +82,7 @@ export default function Header() {
             </Link>
 
             {/* ── Desktop nav ── */}
-            <nav className="hidden md:flex items-center gap-1" aria-label="Main navigation">
+            <nav className="hidden md:flex items-center gap-1 flex-1" aria-label="Main navigation">
               {NAV_LINKS.map(({ href, label }) => (
                 <Link
                   key={href}
@@ -100,7 +120,8 @@ export default function Header() {
 
                 {sectorsOpen && (
                   <div
-                    className="absolute left-0 top-full mt-2 w-52 rounded-xl border border-border-medium bg-bg-surface shadow-glass z-50 p-1.5"
+                    className="absolute left-0 top-full mt-2 w-52 rounded-xl border border-border-medium overflow-hidden z-50 p-1.5"
+                    style={{ background: 'var(--bg-surface)', boxShadow: '0 16px 48px rgba(0,0,0,0.6)' }}
                     role="menu"
                   >
                     {SECTORS.map((s) => (
@@ -115,10 +136,7 @@ export default function Header() {
                             : 'text-text-secondary hover:text-text-primary hover:bg-bg-elevated',
                         )}
                       >
-                        <span
-                          className="w-2 h-2 rounded-full shrink-0"
-                          style={{ background: s.color }}
-                        />
+                        <span className="w-2 h-2 rounded-full shrink-0" style={{ background: s.color }} />
                         {s.name}
                       </Link>
                     ))}
@@ -129,11 +147,26 @@ export default function Header() {
 
             {/* ── Right side ── */}
             <div className="flex items-center gap-2">
-              <div className="hidden lg:block w-56">
-                <SearchBar />
-              </div>
+              {/* Search button */}
+              <button
+                onClick={openSearch}
+                aria-label="Search (⌘K)"
+                className="hidden sm:flex items-center gap-2 px-3 py-2 rounded-xl border border-border-medium bg-bg-elevated hover:bg-bg-surface-hover text-text-tertiary hover:text-text-primary transition-all text-xs"
+              >
+                <Search size={13} />
+                <span className="hidden lg:inline">Search...</span>
+                <kbd className="hidden lg:inline font-mono text-[10px] px-1.5 py-0.5 rounded-md border border-border-medium bg-bg-primary text-text-tertiary">
+                  ⌘K
+                </kbd>
+              </button>
 
-              {/* Disclaimer pill */}
+              {/* Notification bell */}
+              <NotificationBell />
+
+              {/* Theme toggle */}
+              <ThemeToggle />
+
+              {/* Disclaimer pill — xl+ only */}
               <Link
                 href="/disclaimer"
                 className="hidden xl:flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-accent-amber-border bg-accent-amber-bg text-accent-amber text-[11px] font-medium hover:opacity-80 transition-opacity"
@@ -154,17 +187,14 @@ export default function Header() {
           </div>
         </div>
 
-        {/* Close dropdown when clicking outside */}
+        {/* Close sectors dropdown on outside click */}
         {sectorsOpen && (
-          <div
-            className="fixed inset-0 z-40"
-            aria-hidden="true"
-            onClick={() => setSectorsOpen(false)}
-          />
+          <div className="fixed inset-0 z-40" aria-hidden="true" onClick={() => setSectorsOpen(false)} />
         )}
       </header>
 
       <MobileNav open={mobileOpen} onClose={() => setMobileOpen(false)} />
+      <SearchModal />
     </>
   )
 }

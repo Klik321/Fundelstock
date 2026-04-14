@@ -9,19 +9,19 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // ── Terminal Luxe core backgrounds ──────────────────────────────────
+        // ── Terminal Luxe core backgrounds (CSS-var driven for theming) ─────
         bg: {
-          primary: '#0b0e17',
-          surface: '#131722',
-          'surface-hover': '#1c2030',
-          elevated: '#1e2235',
-          ticker: '#0d1019',
+          primary:        'var(--bg-primary)',
+          surface:        'var(--bg-surface)',
+          'surface-hover':'var(--bg-surface-hover)',
+          elevated:       'var(--bg-elevated)',
+          ticker:         'var(--bg-ticker)',
         },
-        // ── Text hierarchy ───────────────────────────────────────────────────
+        // ── Text hierarchy (CSS-var driven for theming) ──────────────────────
         text: {
-          primary: '#d1d4dc',
-          secondary: '#787b86',
-          tertiary: '#4a4e5e',
+          primary:   'var(--text-primary)',
+          secondary: 'var(--text-secondary)',
+          tertiary:  'var(--text-tertiary)',
         },
         // ── Semantic accent colors ───────────────────────────────────────────
         accent: {
@@ -41,11 +41,11 @@ const config: Config = {
           purple: '#7c4dff',
           'purple-bg': 'rgba(124,77,255,0.12)',
         },
-        // ── Borders ──────────────────────────────────────────────────────────
+        // ── Borders (CSS-var driven for theming) ─────────────────────────────
         border: {
-          subtle: 'rgba(255,255,255,0.04)',
-          medium: 'rgba(255,255,255,0.08)',
-          strong: 'rgba(255,255,255,0.14)',
+          subtle: 'var(--border-subtle)',
+          medium: 'var(--border-medium)',
+          strong: 'var(--border-strong)',
         },
       },
 

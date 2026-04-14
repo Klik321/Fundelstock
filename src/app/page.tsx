@@ -13,10 +13,14 @@ import StatsSection from '@/components/home/StatsSection'
 import FeaturesSection from '@/components/home/FeaturesSection'
 import ScrollReveal from '@/components/ui/ScrollReveal'
 
-// Heavy TradingView widgets — client-only (no SSR)
-const TickerTape = dynamic(() => import('@/components/tradingview/TickerTape'), { ssr: false })
-const MarketOverview = dynamic(() => import('@/components/tradingview/MarketOverview'), { ssr: false })
-const StockMarketWidget = dynamic(() => import('@/components/tradingview/StockMarketWidget'), { ssr: false })
+// Heavy TradingView widgets — client-only
+const TickerTape       = dynamic(() => import('@/components/tradingview/TickerTape'),        { ssr: false })
+const MarketOverview   = dynamic(() => import('@/components/tradingview/MarketOverview'),    { ssr: false })
+const StockMarketWidget= dynamic(() => import('@/components/tradingview/StockMarketWidget'), { ssr: false })
+const EarningsCalendar = dynamic(() => import('@/components/tradingview/EarningsCalendar'),  { ssr: false })
+const EconomicCalendar = dynamic(() => import('@/components/tradingview/EconomicCalendar'),  { ssr: false })
+const CryptoMarkets    = dynamic(() => import('@/components/tradingview/CryptoMarkets'),     { ssr: false })
+const ForexWidget      = dynamic(() => import('@/components/tradingview/ForexWidget'),       { ssr: false })
 
 // ── Server-side data ────────────────────────────────────────────────────────
 async function getHomeData() {
@@ -25,7 +29,6 @@ async function getHomeData() {
     fetchNews({ limit: 60 }),
   ])
 
-  // Build headline map per sector (max 3 per sector)
   const newsMap: Record<string, { headline: string; url: string }[]> = {}
   for (const article of generalRes.articles) {
     for (const slug of article.sectors) {
@@ -45,7 +48,7 @@ export default async function HomePage() {
 
   return (
     <>
-      {/* ── Sticky Ticker Tape — pinned just below the fixed header ── */}
+      {/* ── Sticky Ticker Tape ── */}
       <div className="sticky top-16 z-40 border-b border-border-subtle bg-bg-ticker">
         <Suspense fallback={<div className="h-10" />}>
           <TickerTape />
@@ -60,13 +63,11 @@ export default async function HomePage() {
         {/* ── Stats ── */}
         <StatsSection />
 
-        {/* ── Divider ── */}
         <div className="border-t border-border-subtle" />
 
-        {/* ── Features section (Thala-style glass cards) ── */}
+        {/* ── Features (Thala-style glass cards) ── */}
         <FeaturesSection />
 
-        {/* ── Divider ── */}
         <div className="border-t border-border-subtle" />
 
         {/* ── Breaking News ── */}
@@ -95,7 +96,7 @@ export default async function HomePage() {
           <IndexRow indices={INDICES} />
         </ScrollReveal>
 
-        {/* ── Market Overview widget ── */}
+        {/* ── Market Overview ── */}
         <ScrollReveal delay={0.05} className="pb-12">
           <h2 className="section-title mb-6">Market Overview</h2>
           <div className="card overflow-hidden p-0">
@@ -123,7 +124,6 @@ export default async function HomePage() {
               </Link>
             </div>
           </ScrollReveal>
-          {/* SectorGrid has its own whileInView stagger internally */}
           <SectorGrid sectors={SECTORS} newsMap={newsMap} />
         </section>
 
@@ -137,24 +137,68 @@ export default async function HomePage() {
           </div>
         </ScrollReveal>
 
+        {/* ── Earnings & Economic Calendar (side by side) ── */}
+        <ScrollReveal delay={0.05} className="pb-12">
+          <div className="flex items-end justify-between mb-6">
+            <div>
+              <h2 className="section-title">Earnings & Economic Calendar</h2>
+              <p className="mt-3 text-sm text-text-secondary">
+                Upcoming company earnings and major economic events
+              </p>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div className="card overflow-hidden p-0">
+              <div className="px-4 pt-4 pb-2 border-b border-border-subtle">
+                <p className="text-xs font-semibold text-text-secondary uppercase tracking-wider">Earnings</p>
+              </div>
+              <Suspense fallback={<div className="h-[380px] skeleton" />}>
+                <EarningsCalendar height={380} />
+              </Suspense>
+            </div>
+            <div className="card overflow-hidden p-0">
+              <div className="px-4 pt-4 pb-2 border-b border-border-subtle">
+                <p className="text-xs font-semibold text-text-secondary uppercase tracking-wider">Economic Events</p>
+              </div>
+              <Suspense fallback={<div className="h-[380px] skeleton" />}>
+                <EconomicCalendar height={380} />
+              </Suspense>
+            </div>
+          </div>
+        </ScrollReveal>
+
+        {/* ── Crypto & Forex (side by side) ── */}
+        <ScrollReveal delay={0.05} className="pb-12">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div>
+              <h2 className="section-title mb-6">Crypto Markets</h2>
+              <div className="card overflow-hidden p-0">
+                <Suspense fallback={<div className="h-[380px] skeleton" />}>
+                  <CryptoMarkets height={380} />
+                </Suspense>
+              </div>
+            </div>
+            <div>
+              <h2 className="section-title mb-6">Forex Cross Rates</h2>
+              <div className="card overflow-hidden p-0">
+                <Suspense fallback={<div className="h-[380px] skeleton" />}>
+                  <ForexWidget height={380} />
+                </Suspense>
+              </div>
+            </div>
+          </div>
+        </ScrollReveal>
+
         {/* ── Legal disclaimer strip ── */}
         <ScrollReveal className="py-8 border-t border-border-subtle mb-4">
           <p className="text-xs text-text-tertiary text-center max-w-2xl mx-auto leading-relaxed">
             Fundelstock is for informational purposes only. Nothing here constitutes financial
             advice. Charts by{' '}
-            <a
-              href="https://www.tradingview.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-accent-blue hover:underline"
-            >
+            <a href="https://www.tradingview.com" target="_blank" rel="noopener noreferrer" className="text-accent-blue hover:underline">
               TradingView
             </a>
             . News from third-party APIs.{' '}
-            <Link
-              href="/disclaimer"
-              className="text-text-secondary hover:text-text-primary underline-offset-2 hover:underline"
-            >
+            <Link href="/disclaimer" className="text-text-secondary hover:text-text-primary underline-offset-2 hover:underline">
               Full disclaimer →
             </Link>
           </p>
