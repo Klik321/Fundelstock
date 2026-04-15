@@ -14,7 +14,7 @@ export default function TopStories({ height = 400, className }: TopStoriesProps)
   return (
     <div
       className={cn('overflow-hidden rounded-xl', className)}
-      style={{ height }}
+      style={{ height, background: '#131722' }}
     >
       <TradingViewWidget
         scriptSrc="https://s3.tradingview.com/external-embedding/embed-widget-timeline.js"
@@ -28,7 +28,7 @@ export default function TopStories({ height = 400, className }: TopStoriesProps)
           displayMode: 'adaptive',
         }}
         className="h-full w-full"
-        style={{ height }}
+        style={{ height, background: '#131722' }}
       />
     </div>
   )

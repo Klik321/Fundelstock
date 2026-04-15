@@ -40,7 +40,7 @@ function CryptoMarketsWidget({ height = 400 }: Props) {
     <div
       ref={ref}
       className="tradingview-widget-container overflow-hidden rounded-xl"
-      style={{ height }}
+      style={{ height, background: '#131722' }}
     />
   )
 }

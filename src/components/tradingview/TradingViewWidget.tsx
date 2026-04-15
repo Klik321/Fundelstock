@@ -51,7 +51,7 @@ function TradingViewWidget({ scriptSrc, config, className, style }: Props) {
         'tradingview-widget-container overflow-hidden rounded-xl',
         className,
       )}
-      style={style}
+      style={{ background: '#131722', ...style }}
     />
   )
 }
