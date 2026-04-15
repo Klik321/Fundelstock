@@ -95,10 +95,9 @@ export default function SectorNewsSection({ sector, className }: SectorNewsSecti
         </div>
         <div className="flex-1 overflow-y-auto p-3 space-y-2 max-h-[420px]">
           <NewsFeed
-            category={sector.slug}
-            keywords={sector.keywords}
+            sectorSlug={sector.slug}
             variant="compact"
-            limit={8}
+            initialLimit={8}
           />
         </div>
       </div>

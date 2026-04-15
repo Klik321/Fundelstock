@@ -79,10 +79,9 @@ export default function SectorPage({ params }: Props) {
           </div>
           <div className="flex-1 overflow-y-auto p-3 space-y-2 max-h-[480px]">
             <NewsFeed
-              category={sector.slug}
-              keywords={sector.keywords}
+              sectorSlug={sector.slug}
               variant="compact"
-              limit={12}
+              initialLimit={12}
             />
           </div>
         </div>
@@ -105,10 +104,9 @@ export default function SectorPage({ params }: Props) {
           More {sector.name} News
         </h2>
         <NewsFeed
-          category={sector.slug}
-          keywords={sector.keywords}
+          sectorSlug={sector.slug}
           variant="default"
-          limit={12}
+          initialLimit={12}
           className="grid grid-cols-1 lg:grid-cols-2 gap-4 space-y-0"
         />
       </div>
