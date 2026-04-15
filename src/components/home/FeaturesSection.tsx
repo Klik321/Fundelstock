@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { Activity, Filter, Globe2, Lock, Rss, TrendingUp } from 'lucide-react'
+import TiltCard from '@/components/ui/TiltCard'
 
 const FEATURES = [
   {
@@ -101,35 +102,38 @@ export default function FeaturesSection() {
             key={title}
             variants={cardVariants}
             whileHover={{ y: -4, transition: { duration: 0.25, ease: 'easeOut' } }}
-            className="overflow-hidden relative p-6 group cursor-default"
-            style={{
-              background: 'var(--bg-surface)',
-              border: '1px solid var(--border-medium)',
-              borderRadius: '16px',
-              borderTop: `2px solid ${color}50`,
-            }}
           >
-            {/* Background decoration icon */}
-            <div
-              className="pointer-events-none absolute top-3 right-3 opacity-5"
-              style={{ width: 80, height: 80 }}
-            >
-              <Icon size={80} style={{ color }} />
-            </div>
-
-            {/* Icon */}
-            <div
-              className="w-11 h-11 rounded-xl flex items-center justify-center mb-5 transition-transform duration-300 group-hover:scale-110"
+            <TiltCard
+              className="overflow-hidden relative p-6 group cursor-default h-full"
               style={{
-                background: `${color}18`,
-                border: `1px solid ${color}30`,
+                background: 'var(--bg-surface)',
+                border: '1px solid var(--border-medium)',
+                borderRadius: '16px',
+                borderTop: `2px solid ${color}50`,
               }}
             >
-              <Icon size={20} style={{ color }} />
-            </div>
+              {/* Background decoration icon */}
+              <div
+                className="pointer-events-none absolute top-3 right-3 opacity-5"
+                style={{ width: 80, height: 80 }}
+              >
+                <Icon size={80} style={{ color }} />
+              </div>
 
-            <h3 className="text-base font-semibold text-text-primary mb-2">{title}</h3>
-            <p className="text-sm text-text-secondary leading-relaxed">{description}</p>
+              {/* Icon */}
+              <div
+                className="w-11 h-11 rounded-xl flex items-center justify-center mb-5 transition-transform duration-300 group-hover:scale-110"
+                style={{
+                  background: `${color}18`,
+                  border: `1px solid ${color}30`,
+                }}
+              >
+                <Icon size={20} style={{ color }} />
+              </div>
+
+              <h3 className="text-base font-semibold text-text-primary mb-2">{title}</h3>
+              <p className="text-sm text-text-secondary leading-relaxed">{description}</p>
+            </TiltCard>
           </motion.div>
         ))}
       </motion.div>

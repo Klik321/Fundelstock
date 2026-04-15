@@ -44,8 +44,11 @@ export default function NewsCard({ article, variant = 'default', className }: Ne
     return (
       <>
         <motion.div
-          whileHover={{ x: 2 }}
-          transition={{ duration: 0.15 }}
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '0px 0px -20px 0px' }}
+          transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+          whileHover={{ x: 2, transition: { duration: 0.15 } }}
           className={cn(
             'news-link flex items-start gap-3 p-3 rounded-xl border border-border-medium',
             'hover:border-border-strong transition-colors duration-150 group relative',
@@ -120,8 +123,11 @@ export default function NewsCard({ article, variant = 'default', className }: Ne
     return (
       <>
         <motion.div
-          whileHover={{ y: -3 }}
-          transition={{ duration: 0.2 }}
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '0px 0px -20px 0px' }}
+          transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+          whileHover={{ y: -3, transition: { duration: 0.2 } }}
           className={cn('news-link card overflow-hidden group block h-full relative cursor-pointer', className)}
           onClick={() => setPreviewOpen(true)}
         >
@@ -179,8 +185,11 @@ export default function NewsCard({ article, variant = 'default', className }: Ne
   return (
     <>
       <motion.div
-        whileHover={{ y: -2 }}
-        transition={{ duration: 0.2 }}
+        initial={{ opacity: 0, y: 16 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '0px 0px -20px 0px' }}
+        transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+        whileHover={{ y: -2, transition: { duration: 0.2 } }}
         className={cn('news-link card overflow-hidden group flex flex-col sm:flex-row relative cursor-pointer', className)}
         onClick={() => setPreviewOpen(true)}
       >

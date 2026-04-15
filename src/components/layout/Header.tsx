@@ -14,12 +14,14 @@ import dynamic from 'next/dynamic'
 
 // Heavy modal — client only
 const SearchModal = dynamic(() => import('@/components/search/SearchModal'), { ssr: false })
+const MarketCountdown = dynamic(() => import('@/components/ui/MarketCountdown'), { ssr: false })
 
 const NAV_LINKS = [
   { href: '/', label: 'Home' },
   { href: '/news', label: 'News' },
   { href: '/indices', label: 'Indices' },
   { href: '/portfolio', label: 'Portfolio' },
+  { href: '/alerts', label: 'Alerts' },
 ]
 
 export default function Header() {
@@ -80,6 +82,11 @@ export default function Header() {
                 <span className="text-accent-blue">stock</span>
               </span>
             </Link>
+
+            {/* ── Market Countdown ── */}
+            <div className="hidden md:flex items-center px-3">
+              <MarketCountdown />
+            </div>
 
             {/* ── Desktop nav ── */}
             <nav className="hidden md:flex items-center gap-1 flex-1" aria-label="Main navigation">

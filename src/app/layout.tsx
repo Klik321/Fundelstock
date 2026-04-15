@@ -5,6 +5,8 @@ import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import CookieBanner from '@/components/layout/CookieBanner'
 import FloatingOrbs from '@/components/ui/FloatingOrbs'
+import CursorSpotlight from '@/components/ui/CursorSpotlight'
+import ScrollProgressBar from '@/components/ui/ScrollProgressBar'
 import ServiceWorkerInit from '@/components/ui/ServiceWorkerInit'
 import QueryProvider from '@/providers/QueryProvider'
 import { ThemeProvider } from '@/providers/ThemeProvider'
@@ -80,6 +82,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <WatchlistProvider>
             <SearchProvider>
               <QueryProvider>
+                <CursorSpotlight />
+                <ScrollProgressBar />
                 <FloatingOrbs />
                 <Header />
                 <main className="relative z-10 pt-16 min-h-screen">{children}</main>

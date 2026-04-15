@@ -5,13 +5,18 @@ import { motion } from 'framer-motion'
 import type { NewsArticle } from '@/types/news'
 import { formatTimeAgo, isSafeUrl } from '@/lib/utils'
 import { cn } from '@/lib/utils'
+import { useTypewriter } from '@/hooks/useTypewriter'
 
 interface BreakingBannerProps {
   articles: NewsArticle[]
   className?: string
 }
 
-export default function BreakingBanner({ articles, className }: BreakingBannerProps) {
+function BreakingBannerInner({ articles, className }: BreakingBannerProps) {
+  // Type out the first headline character-by-character
+  const firstHeadline = articles[0]?.headline ?? ''
+  const typedHeadline = useTypewriter(firstHeadline, 35)
+
   if (!articles.length) return null
 
   return (
@@ -29,6 +34,8 @@ export default function BreakingBanner({ articles, className }: BreakingBannerPr
       <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
         {articles.map((article, i) => {
           const safeUrl = isSafeUrl(article.url) ? article.url : '#'
+          // Use the typewriter text only for the first article
+          const displayHeadline = i === 0 ? typedHeadline : article.headline
           return (
             <motion.a
               key={article.id}
@@ -47,7 +54,11 @@ export default function BreakingBanner({ articles, className }: BreakingBannerPr
                   style={{ animationDelay: `${i * 0.3}s` }}
                 />
                 <p className="text-sm font-medium text-text-primary leading-snug line-clamp-3 news-headline transition-colors">
-                  {article.headline}
+                  {displayHeadline}
+                  {/* Blinking cursor while the first headline is still typing */}
+                  {i === 0 && typedHeadline.length < firstHeadline.length && (
+                    <span className="inline-block w-0.5 h-3.5 ml-0.5 bg-accent-amber align-middle animate-pulse" />
+                  )}
                 </p>
               </div>
               <div className="flex items-center justify-between mt-auto">
@@ -66,3 +77,5 @@ export default function BreakingBanner({ articles, className }: BreakingBannerPr
     </div>
   )
 }
+
+export default BreakingBannerInner

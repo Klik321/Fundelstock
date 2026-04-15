@@ -11,6 +11,7 @@ import IndexRow from '@/components/market/IndexRow'
 import HeroSection from '@/components/home/HeroSection'
 import StatsSection from '@/components/home/StatsSection'
 import FeaturesSection from '@/components/home/FeaturesSection'
+import WhatsMovingToday from '@/components/home/WhatsMovingToday'
 import ScrollReveal from '@/components/ui/ScrollReveal'
 
 // Heavy TradingView widgets — client-only
@@ -21,6 +22,12 @@ const EarningsCalendar = dynamic(() => import('@/components/tradingview/Earnings
 const EconomicCalendar = dynamic(() => import('@/components/tradingview/EconomicCalendar'),  { ssr: false })
 const CryptoMarkets    = dynamic(() => import('@/components/tradingview/CryptoMarkets'),     { ssr: false })
 const ForexWidget      = dynamic(() => import('@/components/tradingview/ForexWidget'),       { ssr: false })
+
+// Economic Indicators — client-only (fetches FRED on mount)
+const EconomicIndicators = dynamic(() => import('@/components/economic/EconomicIndicators'), { ssr: false })
+
+// Fear & Greed — client-only (fetches /api/news on mount)
+const FearGreedMeter = dynamic(() => import('@/components/ui/FearGreedMeter'), { ssr: false })
 
 // ── Server-side data ────────────────────────────────────────────────────────
 async function getHomeData() {
@@ -57,11 +64,33 @@ export default async function HomePage() {
 
       <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
 
+        {/* ── What's Moving Today digest banner ── */}
+        {breaking.length > 0 && (
+          <ScrollReveal className="pt-4 pb-2">
+            <WhatsMovingToday articles={breaking} />
+          </ScrollReveal>
+        )}
+
         {/* ── Hero ── */}
         <HeroSection />
 
         {/* ── Stats ── */}
         <StatsSection />
+
+        {/* ── Market Sentiment ── */}
+        <ScrollReveal delay={0.05} className="pb-10">
+          <div className="flex items-end justify-between mb-5">
+            <div>
+              <h2 className="section-title">Market Sentiment</h2>
+              <p className="mt-3 text-sm text-text-secondary">
+                Derived from the sentiment of recent news articles
+              </p>
+            </div>
+          </div>
+          <div className="max-w-sm">
+            <FearGreedMeter />
+          </div>
+        </ScrollReveal>
 
         <div className="border-t border-border-subtle" />
 
@@ -135,6 +164,19 @@ export default async function HomePage() {
               <StockMarketWidget height={400} />
             </Suspense>
           </div>
+        </ScrollReveal>
+
+        {/* ── Economic Indicators ── */}
+        <ScrollReveal delay={0.05} className="pb-12">
+          <div className="mb-6">
+            <h2 className="section-title">Economic Indicators</h2>
+            <p className="mt-3 text-sm text-text-secondary">
+              Key macro data from the Federal Reserve (FRED)
+            </p>
+          </div>
+          <Suspense fallback={<div className="h-[120px] skeleton rounded-xl" />}>
+            <EconomicIndicators />
+          </Suspense>
         </ScrollReveal>
 
         {/* ── Earnings & Economic Calendar (side by side) ── */}
