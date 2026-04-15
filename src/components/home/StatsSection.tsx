@@ -60,13 +60,14 @@ export default function StatsSection() {
       initial="hidden"
       whileInView="show"
       viewport={{ once: true, margin: '0px 0px -60px 0px' }}
-      className="grid grid-cols-2 lg:grid-cols-4 gap-4 py-10"
+      className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-border-subtle gap-0 py-10"
     >
       {STATS.map(({ icon: Icon, value, suffix, label, description, color, bgColor }) => (
         <motion.div
           key={label}
           variants={cardVariants}
-          className="feature-card p-5 group cursor-default"
+          className="feature-card p-5 group cursor-default relative overflow-hidden"
+          style={{ paddingBottom: '24px' }}
         >
           {/* Icon */}
           <div
@@ -77,7 +78,10 @@ export default function StatsSection() {
           </div>
 
           {/* Value */}
-          <div className="text-3xl font-bold text-text-primary font-mono tabular-nums mb-1">
+          <div
+            className="text-4xl font-bold font-mono tabular-nums mb-1"
+            style={{ color }}
+          >
             <AnimatedCounter target={value} suffix={suffix} duration={1.6} />
           </div>
 
@@ -86,6 +90,12 @@ export default function StatsSection() {
 
           {/* Description */}
           <p className="text-xs text-text-tertiary leading-relaxed">{description}</p>
+
+          {/* Bottom accent line */}
+          <div
+            className="absolute bottom-0 left-0 right-0 h-[2px]"
+            style={{ background: `${color}40` }}
+          />
         </motion.div>
       ))}
     </motion.div>

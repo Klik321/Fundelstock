@@ -101,8 +101,22 @@ export default function FeaturesSection() {
             key={title}
             variants={cardVariants}
             whileHover={{ y: -4, transition: { duration: 0.25, ease: 'easeOut' } }}
-            className="gradient-border-card p-6 group cursor-default"
+            className="overflow-hidden relative p-6 group cursor-default"
+            style={{
+              background: 'var(--bg-surface)',
+              border: '1px solid var(--border-medium)',
+              borderRadius: '16px',
+              borderTop: `2px solid ${color}50`,
+            }}
           >
+            {/* Background decoration icon */}
+            <div
+              className="pointer-events-none absolute top-3 right-3 opacity-5"
+              style={{ width: 80, height: 80 }}
+            >
+              <Icon size={80} style={{ color }} />
+            </div>
+
             {/* Icon */}
             <div
               className="w-11 h-11 rounded-xl flex items-center justify-center mb-5 transition-transform duration-300 group-hover:scale-110"
