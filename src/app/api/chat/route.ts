@@ -45,12 +45,18 @@ export async function POST(req: NextRequest) {
   }))
 
   try {
+    // Prepend system prompt as first user/model exchange so it works across all Gemini versions
+    const contents = [
+      { role: 'user', parts: [{ text: SYSTEM_PROMPT }] },
+      { role: 'model', parts: [{ text: 'Understood. I am Fundi, your AI market assistant. How can I help you?' }] },
+      ...safeMessages,
+    ]
+
     const res = await fetch(`${GEMINI_URL}?key=${key}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
-        contents: safeMessages,
+        contents,
         generationConfig: {
           temperature: 0.7,
           maxOutputTokens: 512,
@@ -61,12 +67,16 @@ export async function POST(req: NextRequest) {
     if (!res.ok) {
       const err = await res.text()
       console.error('Gemini error:', err)
-      return NextResponse.json({ error: 'AI request failed' }, { status: 502 })
+      const status = res.status
+      if (status === 400) return NextResponse.json({ reply: 'Invalid request. Please try rephrasing.' })
+      if (status === 403 || status === 401) return NextResponse.json({ reply: 'AI service not authorized. Please check the API key in Vercel environment variables.' })
+      if (status === 429) return NextResponse.json({ reply: 'Too many requests. Please wait a moment and try again.' })
+      return NextResponse.json({ reply: 'AI service temporarily unavailable. Please try again shortly.' })
     }
 
     const data = await res.json()
     const text =
-      data?.candidates?.[0]?.content?.parts?.[0]?.text ?? 'Sorry, I could not generate a response.'
+      data?.candidates?.[0]?.content?.parts?.[0]?.text ?? 'I could not generate a response. Please try again.'
 
     return NextResponse.json({ reply: text })
   } catch (err) {
