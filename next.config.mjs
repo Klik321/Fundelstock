@@ -8,8 +8,8 @@ const ContentSecurityPolicy = `
   style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
   font-src 'self' https://fonts.gstatic.com;
   img-src 'self' data: blob: https:;
-  frame-src https://www.tradingview.com https://s3.tradingview.com;
-  connect-src 'self' https://finnhub.io https://newsapi.org https://www.alphavantage.co https://gnews.io wss://www.tradingview.com wss://data.tradingview.com;
+  frame-src https://www.tradingview.com https://s3.tradingview.com https://widget.tradingview.com https://charts.tradingview.com https://*.tradingview.com;
+  connect-src 'self' https://finnhub.io https://newsapi.org https://www.alphavantage.co https://gnews.io wss://www.tradingview.com wss://data.tradingview.com https://symbol-search.tradingview.com https://data.tradingview.com https://widgetdata.tradingview.com https://*.tradingview.com;
   media-src 'self';
   object-src 'none';
   base-uri 'self';

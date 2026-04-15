@@ -33,7 +33,8 @@ function TradingViewWidget({ scriptSrc, config, className, style }: Props) {
       ...config,
       colorTheme: 'dark',
       locale: 'en',
-      isTransparent: true,
+      isTransparent: false,
+      backgroundColor: 'rgba(0,0,0,0)',
     })
     container.appendChild(script)
 

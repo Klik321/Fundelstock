@@ -25,7 +25,7 @@ function ForexWidgetComponent({ height = 400 }: Props) {
       width: '100%',
       height,
       currencies: ['EUR', 'USD', 'JPY', 'GBP', 'CHF', 'AUD', 'CAD', 'NZD'],
-      isTransparent: true,
+      isTransparent: false,
       colorTheme: 'dark',
       locale: 'en',
     })

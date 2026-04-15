@@ -29,7 +29,7 @@ function CryptoMarketsWidget({ height = 400 }: Props) {
       displayCurrency: 'USD',
       colorTheme: 'dark',
       locale: 'en',
-      isTransparent: true,
+      isTransparent: false,
     })
     container.appendChild(script)
 

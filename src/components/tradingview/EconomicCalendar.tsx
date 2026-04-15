@@ -23,7 +23,7 @@ function EconomicCalendarWidget({ height = 400 }: Props) {
     script.async = true
     script.innerHTML = JSON.stringify({
       colorTheme: 'dark',
-      isTransparent: true,
+      isTransparent: false,
       width: '100%',
       height,
       locale: 'en',

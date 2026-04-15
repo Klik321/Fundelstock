@@ -24,7 +24,7 @@ export default function TopStories({ height = 400, className }: TopStoriesProps)
           width: '100%',
           height,
           autosize: true,
-          isTransparent: true,
+          isTransparent: false,
           displayMode: 'adaptive',
         }}
         className="h-full w-full"
