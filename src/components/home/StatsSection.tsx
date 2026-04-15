@@ -60,42 +60,36 @@ export default function StatsSection() {
       initial="hidden"
       whileInView="show"
       viewport={{ once: true, margin: '0px 0px -60px 0px' }}
-      className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-border-subtle gap-0 py-10"
+      className="grid grid-cols-2 lg:grid-cols-4 gap-4 py-10"
     >
       {STATS.map(({ icon: Icon, value, suffix, label, description, color, bgColor }) => (
         <motion.div
           key={label}
           variants={cardVariants}
-          className="feature-card p-5 group cursor-default relative overflow-hidden"
-          style={{ paddingBottom: '24px' }}
+          className="rounded-2xl p-6 group cursor-default"
+          style={{
+            background: 'var(--bg-surface)',
+            border: '1px solid var(--border-subtle)',
+          }}
         >
           {/* Icon */}
           <div
-            className="w-10 h-10 rounded-xl flex items-center justify-center mb-4 transition-transform duration-300 group-hover:scale-110"
-            style={{ background: bgColor, border: `1px solid ${color}30` }}
+            className="w-10 h-10 rounded-xl flex items-center justify-center mb-5 transition-transform duration-300 group-hover:scale-110"
+            style={{ background: bgColor, border: `1px solid ${color}25` }}
           >
             <Icon size={18} style={{ color }} />
           </div>
 
           {/* Value */}
-          <div
-            className="text-4xl font-bold font-mono tabular-nums mb-1"
-            style={{ color }}
-          >
+          <div className="text-4xl font-bold font-mono tabular-nums mb-1" style={{ color }}>
             <AnimatedCounter target={value} suffix={suffix} duration={1.6} />
           </div>
 
           {/* Label */}
-          <p className="text-sm font-semibold text-text-primary mb-1">{label}</p>
+          <p className="text-sm font-semibold text-text-primary mb-1.5">{label}</p>
 
           {/* Description */}
           <p className="text-xs text-text-tertiary leading-relaxed">{description}</p>
-
-          {/* Bottom accent line */}
-          <div
-            className="absolute bottom-0 left-0 right-0 h-[2px]"
-            style={{ background: `${color}40` }}
-          />
         </motion.div>
       ))}
     </motion.div>
