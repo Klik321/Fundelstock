@@ -19,7 +19,7 @@ export default function MiniChart({
   className,
 }: MiniChartProps) {
   return (
-    <div className={cn('overflow-hidden rounded-xl', className)} style={{ height }}>
+    <div className={cn('overflow-hidden', className)} style={{ height }}>
       <TradingViewWidget
         scriptSrc="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js"
         config={{
