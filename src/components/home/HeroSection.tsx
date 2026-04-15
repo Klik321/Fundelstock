@@ -37,44 +37,29 @@ export default function HeroSection() {
   return (
     <section className="relative pt-16 pb-14 overflow-hidden">
 
-      {/* ── Aurora beams ── */}
+      {/* ── Subtle ambient glow — no hard edges ── */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden" style={{ zIndex: 0 }}>
-        {/* Beam 1 — blue, top-left */}
         <div
-          className="aurora-1 absolute -top-40 -left-40 w-[700px] h-[700px] rounded-full"
+          className="absolute -top-60 -left-60 w-[900px] h-[900px] rounded-full"
           style={{
-            background: 'radial-gradient(ellipse at 40% 40%, rgba(41,98,255,0.18) 0%, rgba(41,98,255,0.06) 40%, transparent 70%)',
-            filter: 'blur(60px)',
+            background: 'radial-gradient(ellipse at 40% 40%, rgba(41,98,255,0.09) 0%, transparent 65%)',
+            filter: 'blur(80px)',
           }}
         />
-        {/* Beam 2 — purple, top-right */}
         <div
-          className="aurora-2 absolute -top-20 -right-40 w-[600px] h-[600px] rounded-full"
+          className="absolute -top-40 -right-60 w-[700px] h-[700px] rounded-full"
           style={{
-            background: 'radial-gradient(ellipse at 60% 30%, rgba(124,77,255,0.16) 0%, rgba(124,77,255,0.05) 45%, transparent 70%)',
-            filter: 'blur(70px)',
+            background: 'radial-gradient(ellipse at 60% 30%, rgba(124,77,255,0.07) 0%, transparent 65%)',
+            filter: 'blur(90px)',
           }}
-        />
-        {/* Beam 3 — teal, bottom-center */}
-        <div
-          className="aurora-3 absolute bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-[300px] rounded-full"
-          style={{
-            background: 'radial-gradient(ellipse at 50% 100%, rgba(38,166,154,0.10) 0%, rgba(38,166,154,0.04) 50%, transparent 70%)',
-            filter: 'blur(50px)',
-          }}
-        />
-        {/* Scan line */}
-        <div
-          className="scan-line absolute left-0 right-0 h-px"
-          style={{ background: 'linear-gradient(90deg, transparent 0%, rgba(41,98,255,0.4) 30%, rgba(124,77,255,0.4) 70%, transparent 100%)', top: '10%' }}
         />
       </div>
 
       {/* Dot grid */}
-      <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 0, opacity: 0.25 }}>
+      <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 0, opacity: 0.12 }}>
         <defs>
           <pattern id="dots" x="0" y="0" width="28" height="28" patternUnits="userSpaceOnUse">
-            <circle cx="1" cy="1" r="0.8" fill="rgba(255,255,255,0.15)" />
+            <circle cx="1" cy="1" r="0.7" fill="rgba(255,255,255,0.2)" />
           </pattern>
         </defs>
         <rect width="100%" height="100%" fill="url(#dots)" />
