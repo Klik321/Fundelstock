@@ -28,7 +28,7 @@ function markSeen(ids: string[]) {
     const existing = getSeenIds()
     ids.forEach((id) => existing.add(id))
     // Keep only last 200 ids to avoid unbounded growth
-    const trimmed = [...existing].slice(-200)
+    const trimmed = Array.from(existing).slice(-200)
     localStorage.setItem(STORAGE_KEY, JSON.stringify(trimmed))
   } catch {}
 }
