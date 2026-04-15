@@ -5,6 +5,8 @@ import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import CookieBanner from '@/components/layout/CookieBanner'
 import FloatingOrbs from '@/components/ui/FloatingOrbs'
+import dynamic from 'next/dynamic'
+const ChatWidget = dynamic(() => import('@/components/chat/ChatWidget'), { ssr: false })
 import CursorSpotlight from '@/components/ui/CursorSpotlight'
 import ScrollProgressBar from '@/components/ui/ScrollProgressBar'
 import ServiceWorkerInit from '@/components/ui/ServiceWorkerInit'
@@ -90,6 +92,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <Footer />
                 <CookieBanner />
                 <ServiceWorkerInit />
+                <ChatWidget />
               </QueryProvider>
             </SearchProvider>
           </WatchlistProvider>
