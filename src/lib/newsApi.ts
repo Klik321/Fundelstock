@@ -49,11 +49,13 @@ export function mapFinnhubArticle(raw: {
     headline: raw.headline,
     summary: raw.summary,
     url: raw.url,
-    image: raw.image || null,
+    imageUrl: raw.image || undefined,
     source: raw.source,
     publishedAt: new Date(raw.datetime * 1000).toISOString(),
-    category: raw.category,
-    relatedSymbols: raw.related ? raw.related.split(',').map((s) => s.trim()) : [],
+    sectors: [],
+    indices: [],
+    sentiment: 'neutral',
+    breaking: false,
   }
 }
 
@@ -74,10 +76,12 @@ export function mapNewsApiArticle(raw: {
     headline: raw.title,
     summary: raw.description ?? '',
     url: raw.url,
-    image: raw.urlToImage,
+    imageUrl: raw.urlToImage ?? undefined,
     source: raw.source.name,
     publishedAt: raw.publishedAt,
-    category: 'general',
-    relatedSymbols: [],
+    sectors: [],
+    indices: [],
+    sentiment: 'neutral',
+    breaking: false,
   }
 }
