@@ -26,10 +26,13 @@ Rules:
 - Be friendly and professional`
 
 async function callGemini(model: string, contents: object[], key: string) {
-  const url = `${BASE_URL}/${model}:generateContent?key=${key}`
+  const url = `${BASE_URL}/${model}:generateContent`
   const res = await fetch(url, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      'x-goog-api-key': key,
+    },
     body: JSON.stringify({
       contents,
       generationConfig: {
