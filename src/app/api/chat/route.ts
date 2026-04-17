@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 const MODELS = [
+  'gemini-2.0-flash',
   'gemini-1.5-flash',
-  'gemini-1.5-flash-8b',
+  'gemini-1.5-pro',
 ]
 
 const BASE_URL = 'https://generativelanguage.googleapis.com/v1beta/models'
@@ -101,8 +102,8 @@ export async function POST(req: NextRequest) {
       if (status === 401 || status === 403) {
         return NextResponse.json({ reply: 'AI service not authorized. Please check the API key in Vercel environment variables.' })
       }
-      // 429 or 5xx — try next model
-      if (status === 429 || status >= 500) continue
+      // 429, 404, or 5xx — try next model
+      if (status === 429 || status === 404 || status >= 500) continue
 
       return NextResponse.json({ reply: `AI error (${status}). Please try again.` })
     } catch (err) {
