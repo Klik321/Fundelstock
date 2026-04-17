@@ -38,17 +38,24 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'No messages' }, { status: 400 })
   }
 
-  // Sanitize inputs
-  const safeMessages = messages.slice(-10).map((m) => ({
-    role: m.role === 'assistant' ? 'model' : 'user',
-    parts: [{ text: String(m.content).slice(0, 1000) }],
-  }))
+  // Strip initial greeting (first assistant msg) and sanitize, ensure user/model alternation
+  const safeMessages = messages
+    .slice(-10)
+    .filter((m, i) => !(i === 0 && m.role === 'assistant'))
+    .map((m) => ({
+      role: m.role === 'assistant' ? 'model' : 'user',
+      parts: [{ text: String(m.content).slice(0, 1000) }],
+    }))
+    .filter((m, i, arr) => i === 0 ? m.role === 'user' : m.role !== arr[i - 1].role)
+
+  if (!safeMessages.length) {
+    return NextResponse.json({ reply: 'Please type a question.' })
+  }
 
   try {
-    // Prepend system prompt as first user/model exchange so it works across all Gemini versions
     const contents = [
       { role: 'user', parts: [{ text: SYSTEM_PROMPT }] },
-      { role: 'model', parts: [{ text: 'Understood. I am Fundi, your AI market assistant. How can I help you?' }] },
+      { role: 'model', parts: [{ text: 'Understood. I am Fundi, your AI market assistant.' }] },
       ...safeMessages,
     ]
 
