@@ -130,7 +130,7 @@ export default function CookiesPage() {
           <h2 className="text-base font-semibold text-ink-primary">Contact</h2>
           <p>
             For questions about our use of cookies:{' '}
-            <strong className="text-ink-primary">privacy@fundelstock.com</strong>
+            <strong className="text-ink-primary">privacy@fundlestock.com</strong>
           </p>
         </section>
 

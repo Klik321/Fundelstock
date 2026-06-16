@@ -1,5 +1,5 @@
 export const SITE_NAME = 'Fundelstock'
-export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://fundelstock.com'
+export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://fundlestock.com'
 export const SITE_DESCRIPTION =
   'Real-time financial news categorized by sector and index for fundamental traders.'
 

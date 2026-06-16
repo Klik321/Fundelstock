@@ -28,7 +28,7 @@ export default function PrivacyPage() {
             Fundelstock (&quot;we&quot;, &quot;us&quot;, or &quot;our&quot;) respects your
             privacy. This Privacy Policy explains what information we collect, how we use it,
             and your rights regarding your personal data when you use our website at
-            fundelstock.com (the &quot;Service&quot;).
+            fundlestock.com (the &quot;Service&quot;).
           </p>
           <p>
             By using the Service, you agree to the collection and use of information in
@@ -132,7 +132,7 @@ export default function PrivacyPage() {
           <h2 className="text-base font-semibold text-ink-primary">Contact</h2>
           <p>
             If you have any questions about this Privacy Policy, please contact us at:{' '}
-            <strong className="text-ink-primary">privacy@fundelstock.com</strong>
+            <strong className="text-ink-primary">privacy@fundlestock.com</strong>
           </p>
         </section>
 

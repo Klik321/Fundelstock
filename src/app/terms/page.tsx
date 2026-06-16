@@ -122,7 +122,7 @@ export default function TermsPage() {
           <h2 className="text-base font-semibold text-ink-primary">10. Contact</h2>
           <p>
             If you have questions about these Terms, please contact:{' '}
-            <strong className="text-ink-primary">legal@fundelstock.com</strong>
+            <strong className="text-ink-primary">legal@fundlestock.com</strong>
           </p>
         </section>
 
