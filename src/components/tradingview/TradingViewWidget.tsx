@@ -29,6 +29,15 @@ function TradingViewWidget({ scriptSrc, config, className, style }: Props) {
     widgetDiv.className = 'tradingview-widget-container__widget'
     container.appendChild(widgetDiv)
 
+    // TradingView injects an <iframe> when it renders — watch for it.
+    const observer = new MutationObserver(() => {
+      if (widgetDiv.querySelector('iframe')) {
+        setStatus('ready')
+        observer.disconnect()
+      }
+    })
+    observer.observe(widgetDiv, { childList: true, subtree: true })
+
     const script = document.createElement('script')
     script.src = scriptSrc
     script.async = true
@@ -41,17 +50,11 @@ function TradingViewWidget({ scriptSrc, config, className, style }: Props) {
       isTransparent: false,
       backgroundColor: 'rgba(0,0,0,0)',
     })
-    script.onerror = () => setStatus('error')
+    script.onerror = () => {
+      setStatus('error')
+      observer.disconnect()
+    }
     container.appendChild(script)
-
-    // TradingView injects an <iframe> when it renders — watch for it.
-    const observer = new MutationObserver(() => {
-      if (widgetDiv.querySelector('iframe')) {
-        setStatus('ready')
-        observer.disconnect()
-      }
-    })
-    observer.observe(widgetDiv, { childList: true, subtree: true })
 
     // If nothing renders in time (CDN/CSP/network failure), surface an error.
     const timeout = setTimeout(() => {
