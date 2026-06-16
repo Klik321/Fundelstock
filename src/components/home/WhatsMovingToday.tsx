@@ -24,14 +24,15 @@ export default function WhatsMovingToday({ articles }: Props) {
   }
 
   const topSectorEntry = Object.entries(sectorCounts).sort((a, b) => b[1] - a[1])[0]
-  if (!topSectorEntry) return null
 
-  const topSectorSlug = topSectorEntry[0]
-  // Capitalize slug: e.g. "real-estate" → "Real Estate"
-  const topSectorName = topSectorSlug
-    .split('-')
-    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-    .join(' ')
+  // Fall back to a generic label if articles exist but none are sector-tagged,
+  // so the digest never silently disappears.
+  const topSectorName = topSectorEntry
+    ? topSectorEntry[0]
+        .split('-')
+        .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+        .join(' ')
+    : 'Markets'
 
   // ── Sentiment split ───────────────────────────────────────────────────────
   let bullishCount  = 0

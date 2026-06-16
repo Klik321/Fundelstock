@@ -64,7 +64,7 @@ export default function SectorCard({ sector, headlines = [], className }: Sector
       </div>
 
       {/* Headlines */}
-      {headlines.length > 0 && (
+      {headlines.length > 0 ? (
         <div className="px-4 py-3 border-t border-border-subtle space-y-2 flex-1">
           {headlines.slice(0, 2).map((h, i) => (
             <a
@@ -77,6 +77,15 @@ export default function SectorCard({ sector, headlines = [], className }: Sector
               {h.headline}
             </a>
           ))}
+        </div>
+      ) : (
+        <div className="px-4 py-3 border-t border-border-subtle flex-1 flex items-center">
+          <Link
+            href={`/sectors/${sector.slug}`}
+            className="text-[11px] text-text-tertiary hover:text-accent-blue transition-colors"
+          >
+            No recent headlines — browse {sector.name} news →
+          </Link>
         </div>
       )}
     </motion.div>

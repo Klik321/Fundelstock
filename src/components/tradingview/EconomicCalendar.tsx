@@ -1,45 +1,24 @@
 'use client'
 
-import { memo, useEffect, useRef } from 'react'
+import { memo } from 'react'
+import TradingViewWidget from './TradingViewWidget'
 
 interface Props {
   height?: number
 }
 
 function EconomicCalendarWidget({ height = 400 }: Props) {
-  const ref = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    const container = ref.current
-    if (!container) return
-    container.innerHTML = ''
-
-    const widgetDiv = document.createElement('div')
-    widgetDiv.className = 'tradingview-widget-container__widget'
-    container.appendChild(widgetDiv)
-
-    const script = document.createElement('script')
-    script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-events.js'
-    script.async = true
-    script.innerHTML = JSON.stringify({
-      colorTheme: 'dark',
-      isTransparent: false,
-      width: '100%',
-      height,
-      locale: 'en',
-      importanceFilter: '0,1',
-      countryFilter: 'us,eu,gb,jp,cn',
-    })
-    container.appendChild(script)
-
-    return () => { container.innerHTML = '' }
-  }, [height])
-
   return (
-    <div
-      ref={ref}
-      className="tradingview-widget-container overflow-hidden"
-      style={{ height, background: '#131722' }}
+    <TradingViewWidget
+      scriptSrc="https://s3.tradingview.com/external-embedding/embed-widget-events.js"
+      config={{
+        width: '100%',
+        height,
+        importanceFilter: '0,1',
+        countryFilter: 'us,eu,gb,jp,cn',
+      }}
+      className="overflow-hidden"
+      style={{ height }}
     />
   )
 }

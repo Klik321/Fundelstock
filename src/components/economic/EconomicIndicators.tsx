@@ -62,7 +62,10 @@ function EconomicIndicators() {
 
   useEffect(() => {
     let cancelled = false
-    fetch('/api/economic')
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), 8000)
+
+    fetch('/api/economic', { signal: controller.signal })
       .then((r) => r.json())
       .then((data) => {
         if (!cancelled) {
@@ -76,7 +79,13 @@ function EconomicIndicators() {
           setLoading(false)
         }
       })
-    return () => { cancelled = true }
+      .finally(() => clearTimeout(timeout))
+
+    return () => {
+      cancelled = true
+      clearTimeout(timeout)
+      controller.abort()
+    }
   }, [])
 
   if (loading) {
@@ -89,7 +98,17 @@ function EconomicIndicators() {
     )
   }
 
-  if (!indicators?.length) return null
+  // Honest empty/error state — never silently remove the section.
+  if (!indicators?.length) {
+    return (
+      <div className="bg-bg-surface border border-border-subtle rounded-xl p-6 text-center">
+        <p className="text-sm text-text-secondary">Economic indicators are unavailable right now.</p>
+        <p className="text-xs text-text-tertiary mt-1">
+          Live macro data from FRED will appear here once the feed reconnects.
+        </p>
+      </div>
+    )
+  }
 
   return (
     <div className="flex gap-3 overflow-x-auto pb-2 sm:grid sm:grid-cols-4 sm:overflow-visible">

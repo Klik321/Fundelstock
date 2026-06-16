@@ -7,6 +7,7 @@ interface SentimentResult {
   score: number
   label: string
   color: string
+  sampleSize: number
 }
 
 function scoreToLabel(score: number): { label: string; color: string } {
@@ -23,16 +24,19 @@ function FearGreedMeter() {
 
   useEffect(() => {
     let cancelled = false
+    // Abort the fetch if it hangs so the card never sticks on the skeleton.
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), 8000)
 
     async function load() {
       try {
-        const res = await fetch('/api/news?limit=50')
+        const res = await fetch('/api/news?limit=50', { signal: controller.signal })
         if (!res.ok) throw new Error('fetch failed')
         const data: NewsFeedResponse = await res.json()
 
         const articles = data.articles ?? []
         if (articles.length === 0) {
-          if (!cancelled) setResult({ score: 50, ...scoreToLabel(50) })
+          if (!cancelled) setResult({ score: 50, ...scoreToLabel(50), sampleSize: 0 })
           return
         }
 
@@ -51,16 +55,22 @@ function FearGreedMeter() {
         )
         const score = Math.max(0, Math.min(100, normalised))
 
-        if (!cancelled) setResult({ score, ...scoreToLabel(score) })
+        if (!cancelled) setResult({ score, ...scoreToLabel(score), sampleSize: articles.length })
       } catch {
-        if (!cancelled) setResult({ score: 50, ...scoreToLabel(50) })
+        // Timeout / network / parse error → honest neutral fallback, never stuck loading.
+        if (!cancelled) setResult({ score: 50, ...scoreToLabel(50), sampleSize: 0 })
       } finally {
+        clearTimeout(timeout)
         if (!cancelled) setLoading(false)
       }
     }
 
     load()
-    return () => { cancelled = true }
+    return () => {
+      cancelled = true
+      clearTimeout(timeout)
+      controller.abort()
+    }
   }, [])
 
   return (
@@ -70,7 +80,7 @@ function FearGreedMeter() {
       </p>
 
       {loading || !result ? (
-        <div className="space-y-3">
+        <div className="space-y-3" aria-busy="true">
           <div className="h-3 rounded-full skeleton w-full" />
           <div className="h-8 skeleton rounded-lg w-24 mx-auto" />
         </div>
@@ -80,7 +90,7 @@ function FearGreedMeter() {
           <div className="relative w-full h-3 rounded-full overflow-visible bg-gradient-to-r from-red-500 via-yellow-400 to-green-500 mb-5">
             {/* Indicator dot */}
             <div
-              className="absolute top-1/2 -translate-y-1/2 w-4 h-4 rounded-full border-2 border-bg-primary shadow-md transition-all duration-500"
+              className="absolute top-1/2 -translate-y-1/2 w-4 h-4 rounded-full border-2 border-bg-primary shadow-md transition-all duration-500 motion-reduce:transition-none"
               style={{
                 left: `calc(${result.score}% - 8px)`,
                 background: result.color,
@@ -99,7 +109,11 @@ function FearGreedMeter() {
             <p className="text-sm font-semibold mt-1" style={{ color: result.color }}>
               {result.label}
             </p>
-            <p className="text-[10px] text-text-tertiary mt-1">Based on last 50 articles</p>
+            <p className="text-[10px] text-text-tertiary mt-1">
+              {result.sampleSize > 0
+                ? `Based on the last ${result.sampleSize} headlines`
+                : 'Live sentiment data unavailable'}
+            </p>
           </div>
 
           {/* Scale labels */}
