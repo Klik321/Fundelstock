@@ -11,6 +11,8 @@ export const metadata: Metadata = {
   title: 'Global Indices',
   description:
     'Live charts and breaking news for 10 major global stock indices — S&P 500, NASDAQ, Dow Jones, FTSE 100, DAX, Nikkei 225, and more.',
+  alternates: { canonical: '/indices' },
+  openGraph: { url: '/indices', title: 'Global Stock Indices' },
 }
 
 export default function IndicesPage() {

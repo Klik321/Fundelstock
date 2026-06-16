@@ -27,9 +27,12 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const sector = getSectorBySlug(params.slug)
   if (!sector) return { title: 'Sector Not Found' }
+  const path = `/sectors/${sector.slug}`
   return {
     title: `${sector.name} Sector — ${sector.etf}`,
     description: `Live chart and breaking news for the ${sector.name} sector (${sector.etf} ETF). ${sector.description}`,
+    alternates: { canonical: path },
+    openGraph: { url: path, title: `${sector.name} Sector News`, description: sector.description },
   }
 }
 

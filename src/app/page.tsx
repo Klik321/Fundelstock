@@ -1,7 +1,13 @@
+import type { Metadata } from 'next'
 import { Suspense } from 'react'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
+
+export const metadata: Metadata = {
+  alternates: { canonical: '/' },
+  openGraph: { url: '/' },
+}
 import { fetchNews, fetchBreakingNews } from '@/lib/api'
 import { SECTORS } from '@/data/sectors'
 import { INDICES } from '@/data/indices'

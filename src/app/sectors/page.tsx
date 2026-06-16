@@ -12,6 +12,8 @@ export const metadata: Metadata = {
   title: 'All Sectors',
   description:
     'Browse all 11 GICS stock market sectors with live TradingView charts and latest news. Technology, Healthcare, Financials, Energy, and more.',
+  alternates: { canonical: '/sectors' },
+  openGraph: { url: '/sectors', title: 'All GICS Sectors' },
 }
 
 export default function SectorsPage() {

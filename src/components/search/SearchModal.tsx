@@ -151,6 +151,7 @@ export default function SearchModal() {
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Search sectors, indices, news..."
+                  aria-label="Search sectors, indices, and news"
                   className="flex-1 bg-transparent text-sm text-text-primary placeholder:text-text-tertiary outline-none"
                   autoComplete="off"
                   spellCheck={false}

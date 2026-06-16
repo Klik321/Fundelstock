@@ -18,9 +18,12 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const index = getIndexBySlug(params.slug)
   if (!index) return { title: 'Index Not Found' }
+  const path = `/indices/${index.slug}`
   return {
     title: `${index.name} — ${index.shortName} Live Chart & News`,
     description: `Live TradingView chart and breaking news for the ${index.name}. ${index.description}`,
+    alternates: { canonical: path },
+    openGraph: { url: path, title: `${index.name} Live Chart & News`, description: index.description },
   }
 }
 

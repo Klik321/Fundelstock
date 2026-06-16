@@ -4,11 +4,14 @@ import './globals.css'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import CookieBanner from '@/components/layout/CookieBanner'
-import FloatingOrbs from '@/components/ui/FloatingOrbs'
 import dynamic from 'next/dynamic'
 import { MotionConfig } from 'framer-motion'
+
+// Decorative, below-the-fold-friendly client effects — deferred out of the
+// initial bundle (they add nothing to first paint and are purely ambient).
 const ChatWidget = dynamic(() => import('@/components/chat/ChatWidget'), { ssr: false })
-import CursorSpotlight from '@/components/ui/CursorSpotlight'
+const FloatingOrbs = dynamic(() => import('@/components/ui/FloatingOrbs'), { ssr: false })
+const CursorSpotlight = dynamic(() => import('@/components/ui/CursorSpotlight'), { ssr: false })
 import ScrollProgressBar from '@/components/ui/ScrollProgressBar'
 import ServiceWorkerInit from '@/components/ui/ServiceWorkerInit'
 import QueryProvider from '@/providers/QueryProvider'
@@ -69,6 +72,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
+    site: '@fundlestock',
+    creator: '@fundlestock',
     title: `${SITE_NAME} — Real-Time Market News`,
     description: SITE_DESCRIPTION,
   },
@@ -81,6 +86,37 @@ export const viewport: Viewport = {
   initialScale: 1,
 }
 
+// ── Structured data (JSON-LD) ────────────────────────────────────────────────
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Organization',
+      '@id': `${SITE_URL}/#organization`,
+      name: SITE_NAME,
+      url: SITE_URL,
+      logo: `${SITE_URL}/icon-512.png`,
+      description: SITE_DESCRIPTION,
+    },
+    {
+      '@type': 'WebSite',
+      '@id': `${SITE_URL}/#website`,
+      name: SITE_NAME,
+      url: SITE_URL,
+      description: SITE_DESCRIPTION,
+      publisher: { '@id': `${SITE_URL}/#organization` },
+      potentialAction: {
+        '@type': 'SearchAction',
+        target: { '@type': 'EntryPoint', urlTemplate: `${SITE_URL}/news?q={search_term_string}` },
+        'query-input': 'required name=search_term_string',
+      },
+    },
+  ],
+}
+
+// Set the saved theme before first paint to avoid a flash of the wrong theme.
+const themeScript = `(function(){try{var t=localStorage.getItem('fundelstock-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();`
+
 // ── Root layout ────────────────────────────────────────────────────────────
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -88,8 +124,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       lang="en"
       className={`${spaceGrotesk.variable} ${dmSans.variable} ${ibmPlexMono.variable}`}
       data-theme="dark"
+      suppressHydrationWarning
     >
       <body>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        />
         <MotionConfig reducedMotion="user">
         <ThemeProvider>
           <WatchlistProvider>
