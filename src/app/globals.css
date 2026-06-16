@@ -13,10 +13,11 @@
   --bg-elevated:      #1e2235;
   --bg-ticker:        #0d1019;
 
-  /* Text */
+  /* Text — tuned to clear WCAG AA (>=4.5:1 on the dark surfaces) while
+     preserving the primary > secondary > tertiary hierarchy. */
   --text-primary:   #d1d4dc;
-  --text-secondary: #787b86;
-  --text-tertiary:  #4a4e5e;
+  --text-secondary: #868d9b;  /* ~5.8:1 on #0b0e17 */
+  --text-tertiary:  #828a98;  /* AA on every surface (page 5.5, card 5.2, elevated 4.5; was #4a4e5e ≈ 2.3:1) */
 
   /* Borders */
   --border-subtle: rgba(255,255,255,0.04);
@@ -49,10 +50,10 @@
   --bg-elevated:      #eef2fa;
   --bg-ticker:        #dde5f5;
 
-  /* Text */
+  /* Text — light mode, AA-tuned */
   --text-primary:   #1a1d2e;
   --text-secondary: #4a5568;
-  --text-tertiary:  #718096;
+  --text-tertiary:  #5b6577;  /* darker than #718096 to clear AA on light bg */
 
   /* Borders */
   --border-subtle: rgba(0,0,0,0.04);
@@ -117,6 +118,12 @@
     color: #fff;
   }
 
+  /* Headings use the Space Grotesk display face by default */
+  h1, h2, h3, h4 {
+    font-family: var(--font-display, var(--font-sans));
+    letter-spacing: -0.02em;
+  }
+
   .font-mono {
     font-variant-numeric: tabular-nums;
     font-feature-settings: 'tnum';
@@ -178,6 +185,14 @@
     background-color: var(--bg-elevated);
   }
 
+  /* Glass surface used by legal pages, dropdowns, and loading cards */
+  .glass-card {
+    @apply rounded-2xl p-5;
+    border: 1px solid var(--border-medium);
+    background-color: var(--bg-surface);
+    box-shadow: var(--card-shadow);
+  }
+
   .pill {
     @apply inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium border;
   }
@@ -188,7 +203,7 @@
   .pill-neutral { @apply pill border; background-color: var(--bg-elevated); color: var(--text-secondary); border-color: var(--border-medium); }
 
   .section-title {
-    @apply text-xl font-bold;
+    @apply text-xl font-bold font-display tracking-tight;
     color: var(--text-primary);
   }
   .section-title::after {
@@ -221,8 +236,8 @@
   .header-glass {
     border-bottom: 1px solid var(--border-subtle);
     background: var(--header-bg);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    backdrop-filter: blur(20px) saturate(140%);
+    -webkit-backdrop-filter: blur(20px) saturate(140%);
     transition: background 0.25s ease;
   }
 
@@ -280,25 +295,13 @@
 
 /* ── Utilities ─────────────────────────────────────────────────────────────── */
 @layer utilities {
-  .text-gradient-brand {
-    background: linear-gradient(135deg, #2962ff 0%, #7c4dff 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-  .text-gradient-green {
-    background: linear-gradient(135deg, #26a69a 0%, #2962ff 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
   .no-scrollbar::-webkit-scrollbar { display: none; }
   .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-  .blur-glass {
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
+  .blur-glass,
+  .blur-backdrop {
+    backdrop-filter: blur(20px) saturate(140%);
+    -webkit-backdrop-filter: blur(20px) saturate(140%);
   }
 }
 
@@ -308,3 +311,24 @@
 
 /* ── Framer Motion layout helpers ──────────────────────────────────────────── */
 [data-framer-portal-host] { z-index: 9999; }
+
+/* ── Accessibility: visible keyboard focus ─────────────────────────────────── */
+:where(a, button, input, textarea, select, summary, [role="button"], [tabindex]):focus-visible {
+  outline: 2px solid #2962ff;
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+/* ── Accessibility: respect prefers-reduced-motion globally ────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .aurora-1, .aurora-2, .aurora-3, .scan-line { animation: none !important; }
+  html { scroll-behavior: auto !important; }
+}

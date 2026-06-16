@@ -12,8 +12,10 @@ const config: Config = {
         // ── Terminal Luxe core backgrounds (CSS-var driven for theming) ─────
         bg: {
           primary:        'var(--bg-primary)',
+          base:           'var(--bg-primary)',        // alias used by some components
           surface:        'var(--bg-surface)',
           'surface-hover':'var(--bg-surface-hover)',
+          overlay:        'var(--bg-surface-hover)',  // alias
           elevated:       'var(--bg-elevated)',
           ticker:         'var(--bg-ticker)',
         },
@@ -23,8 +25,28 @@ const config: Config = {
           secondary: 'var(--text-secondary)',
           tertiary:  'var(--text-tertiary)',
         },
+        // ── "ink" alias of the text hierarchy (legacy token vocabulary) ──────
+        ink: {
+          primary:   'var(--text-primary)',
+          secondary: 'var(--text-secondary)',
+          tertiary:  'var(--text-tertiary)',
+          muted:     'var(--text-tertiary)',
+        },
+        // ── Directional sentiment aliases (charting convention) ──────────────
+        bull: {
+          DEFAULT: '#26a69a',
+          bg: 'rgba(38,166,154,0.12)',
+          border: 'rgba(38,166,154,0.25)',
+        },
+        bear: {
+          DEFAULT: '#ef5350',
+          bg: 'rgba(239,83,80,0.12)',
+          border: 'rgba(239,83,80,0.25)',
+        },
         // ── Semantic accent colors ───────────────────────────────────────────
         accent: {
+          DEFAULT: '#2962ff',
+          muted: 'rgba(41,98,255,0.12)',
           green: '#26a69a',
           'green-bg': 'rgba(38,166,154,0.12)',
           'green-border': 'rgba(38,166,154,0.25)',
@@ -43,6 +65,7 @@ const config: Config = {
         },
         // ── Borders (CSS-var driven for theming) ─────────────────────────────
         border: {
+          DEFAULT: 'var(--border-medium)',
           subtle: 'var(--border-subtle)',
           medium: 'var(--border-medium)',
           strong: 'var(--border-strong)',
@@ -50,6 +73,7 @@ const config: Config = {
       },
 
       fontFamily: {
+        display: ['var(--font-display)', 'var(--font-sans)', 'system-ui', 'sans-serif'],
         sans: ['var(--font-sans)', 'system-ui', '-apple-system', 'sans-serif'],
         mono: ['var(--font-mono)', 'Menlo', 'Monaco', 'Courier New', 'monospace'],
       },

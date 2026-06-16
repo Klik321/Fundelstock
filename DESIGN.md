@@ -14,8 +14,28 @@ colors:
   bg-elevated: "#1e2235"
   bg-ticker: "#0d1019"
   text-primary: "#d1d4dc"
-  text-secondary: "#787b86"
-  text-tertiary: "#4a4e5e"
+  text-secondary: "#868d9b"
+  text-tertiary: "#828a98"
+  # Sector identity palette — one deliberate hue per GICS sector (cards + charts)
+  sector-consumer-staples: "#4caf50"
+  sector-industrials: "#607d8b"
+  sector-materials: "#795548"
+  sector-real-estate: "#f06292"
+  sector-utilities: "#00bcd4"
+  sector-communication: "#ab47bc"
+  # Fear & Greed spectrum — a dedicated red→amber→green ramp for the sentiment meter
+  fg-extreme-fear: "#ef4444"
+  fg-fear: "#f97316"
+  fg-neutral: "#eab308"
+  fg-greed: "#14b8a6"
+  fg-extreme-greed: "#22c55e"
+  # Overlay scrim for modals/badges
+  scrim: "#000000"
+  # Pure white — used sparingly for selection text and badge text on dark
+  white: "#ffffff"
+  # Glass hairline highlights (the "lit edge" of the Liquid Glass system)
+  hairline: "rgba(255,255,255,0.08)"
+  hairline-strong: "rgba(255,255,255,0.22)"
 typography:
   display:
     fontFamily: "Space Grotesk, DM Sans, system-ui, sans-serif"
@@ -55,6 +75,7 @@ rounded:
   2xl: "20px"
   3xl: "28px"
   4xl: "36px"
+  full: "999px"
 spacing:
   xs: "4px"
   sm: "8px"
@@ -144,9 +165,9 @@ semantically-loaded accents borrowed from financial charting convention.
 - **Surface** (#131722): Default card/panel background — the TradingView chart bg.
 - **Elevated** (#1e2235): Raised panels, feature cards, popovers.
 - **Primary Text** (#d1d4dc): Body and headings — soft white, never pure #fff.
-- **Secondary Text** (#787b86): Supporting copy, captions, metadata.
-- **Tertiary Text** (#4a4e5e): De-emphasized labels — **contrast-risk**; use only
-  on small non-essential text, never for content that must be read.
+- **Secondary Text** (#868d9b): Supporting copy, captions, metadata (~5.8:1 AA).
+- **Tertiary Text** (#828a98): De-emphasized labels — tuned to clear WCAG AA
+  (≥4.5:1) on every surface, dimmer than secondary but never below threshold.
 
 ### Named Rules
 **The TradingView Truth Rule.** Green is up, red is down, blue is action —
@@ -248,7 +269,7 @@ glass edge. Without it the dark cards look flat and dead.
 - **Do** give every elevated surface the `inset 0 1px 0 rgba(255,255,255,0.05)`
   glass-bevel highlight.
 - **Do** show a content-shaped skeleton, then real data or an honest empty state.
-- **Do** keep the brightest text at #d1d4dc; reserve #4a4e5e for non-essential labels.
+- **Do** keep the brightest text at #d1d4dc; use #828a98 (AA-safe) for the dimmest labels.
 - **Do** honor `prefers-reduced-motion` on every count-up, reveal, and aurora.
 
 ### Don't:

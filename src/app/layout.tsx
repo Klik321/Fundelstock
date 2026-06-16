@@ -1,11 +1,12 @@
 import type { Metadata, Viewport } from 'next'
-import { DM_Sans, IBM_Plex_Mono } from 'next/font/google'
+import { DM_Sans, IBM_Plex_Mono, Space_Grotesk } from 'next/font/google'
 import './globals.css'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import CookieBanner from '@/components/layout/CookieBanner'
 import FloatingOrbs from '@/components/ui/FloatingOrbs'
 import dynamic from 'next/dynamic'
+import { MotionConfig } from 'framer-motion'
 const ChatWidget = dynamic(() => import('@/components/chat/ChatWidget'), { ssr: false })
 import CursorSpotlight from '@/components/ui/CursorSpotlight'
 import ScrollProgressBar from '@/components/ui/ScrollProgressBar'
@@ -28,6 +29,15 @@ const ibmPlexMono = IBM_Plex_Mono({
   subsets: ['latin'],
   weight: ['400', '500'],
   variable: '--font-mono',
+  display: 'swap',
+})
+
+// Display face for headings — a tight, technical grotesk that reads more
+// "premium terminal" than the brief's original Poppins suggestion.
+const spaceGrotesk = Space_Grotesk({
+  subsets: ['latin'],
+  weight: ['500', '600', '700'],
+  variable: '--font-display',
   display: 'swap',
 })
 
@@ -76,10 +86,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang="en"
-      className={`${dmSans.variable} ${ibmPlexMono.variable}`}
+      className={`${spaceGrotesk.variable} ${dmSans.variable} ${ibmPlexMono.variable}`}
       data-theme="dark"
     >
       <body>
+        <MotionConfig reducedMotion="user">
         <ThemeProvider>
           <WatchlistProvider>
             <SearchProvider>
@@ -97,6 +108,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </SearchProvider>
           </WatchlistProvider>
         </ThemeProvider>
+        </MotionConfig>
       </body>
     </html>
   )
