@@ -46,7 +46,7 @@ function BreakingBannerInner({ articles, className }: BreakingBannerProps) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.07 }}
               whileHover={{ y: -2 }}
-              className="group flex-shrink-0 w-72 card p-4 flex flex-col gap-2"
+              className="group flex-shrink-0 w-[80vw] max-w-[18rem] sm:w-72 card p-4 flex flex-col gap-2"
             >
               <div className="flex items-start gap-2">
                 <span

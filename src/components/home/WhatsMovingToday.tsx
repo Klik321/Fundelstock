@@ -54,7 +54,7 @@ export default function WhatsMovingToday({ articles }: Props) {
   const today = formatDate(new Date())
 
   return (
-    <div className="bg-bg-elevated border border-border-subtle rounded-xl px-5 py-3 flex flex-wrap items-center gap-x-4 gap-y-2">
+    <div className="bg-bg-elevated border border-border-subtle rounded-xl px-4 sm:px-5 py-2.5 sm:py-3 flex flex-wrap items-center gap-x-2.5 sm:gap-x-4 gap-y-1.5">
       {/* Left label */}
       <span className="text-xs font-semibold text-text-secondary whitespace-nowrap">
         📊 Today&apos;s Pulse:

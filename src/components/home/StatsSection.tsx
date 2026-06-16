@@ -60,7 +60,7 @@ export default function StatsSection() {
       initial="hidden"
       whileInView="show"
       viewport={{ once: true, margin: '0px 0px -60px 0px' }}
-      className="grid grid-cols-2 lg:grid-cols-4 gap-4 py-10"
+      className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 py-10"
     >
       {STATS.map(({ icon: Icon, value, suffix, label, description, color, bgColor }) => (
         <motion.div
