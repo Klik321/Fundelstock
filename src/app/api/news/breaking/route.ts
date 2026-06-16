@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server'
 import { fetchBreakingNews } from '@/lib/api'
 
+// Live breaking news — never prerender at build time.
+export const dynamic = 'force-dynamic'
+
 export async function GET() {
   try {
     const articles = await fetchBreakingNews()

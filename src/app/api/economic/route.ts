@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server'
 import { cache } from '@/lib/cache'
 
+// Live macro data — never prerender at build time.
+export const dynamic = 'force-dynamic'
+
 const FRED_API_KEY = process.env.FRED_API_KEY ?? ''
 const CACHE_KEY = 'fred:economic-indicators'
 const CACHE_TTL = 3_600_000 // 1 hour
