@@ -52,6 +52,15 @@ const nextConfig = {
     ],
   },
 
+  async redirects() {
+    return [
+      // Consolidate the legacy singular /sector/* route onto the canonical
+      // /sectors/* pages (kills duplicate content). Specific slug remap first.
+      { source: '/sector/communication', destination: '/sectors/communication-services', permanent: true },
+      { source: '/sector/:slug', destination: '/sectors/:slug', permanent: true },
+    ]
+  },
+
   async headers() {
     return [
       {

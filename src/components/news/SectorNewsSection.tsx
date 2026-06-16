@@ -86,8 +86,8 @@ export default function SectorNewsSection({ sector, className }: SectorNewsSecti
         <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b border-border shrink-0">
           <p className="text-sm font-semibold text-ink-primary">Latest News</p>
           <Link
-            href={`/sector/${sector.slug}`}
-            className="flex items-center gap-1 text-xs text-accent hover:text-accent-hover transition-colors"
+            href={`/sectors/${sector.slug}`}
+            className="flex items-center gap-1 text-xs text-accent hover:text-accent-blue-hover transition-colors"
           >
             View all
             <ChevronRight size={12} />
