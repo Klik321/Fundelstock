@@ -98,7 +98,7 @@ export default function HeroSection() {
                 key={i}
                 variants={wordVariants}
                 className={`inline-block mr-[0.25em] ${
-                  word === 'News,' ? 'text-gradient-brand' : ''
+                  word === 'News,' ? 'text-accent-blue' : ''
                 }`}
               >
                 {word}

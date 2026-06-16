@@ -1,6 +1,7 @@
 'use client'
 
 import { useRef, useState } from 'react'
+import { useReducedMotion } from 'framer-motion'
 
 interface TiltCardProps {
   children: React.ReactNode
@@ -10,9 +11,11 @@ interface TiltCardProps {
 
 export default function TiltCard({ children, className, style }: TiltCardProps) {
   const ref = useRef<HTMLDivElement>(null)
+  const prefersReducedMotion = useReducedMotion()
   const [tilt, setTilt] = useState({ rotateX: 0, rotateY: 0 })
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (prefersReducedMotion) return
     const el = ref.current
     if (!el) return
     const rect = el.getBoundingClientRect()
@@ -30,6 +33,11 @@ export default function TiltCard({ children, className, style }: TiltCardProps) 
     setTilt({ rotateX: 0, rotateY: 0 })
   }
 
+  // No 3D tilt for users who prefer reduced motion (vestibular safety).
+  const transform = prefersReducedMotion
+    ? undefined
+    : `perspective(1000px) rotateX(${tilt.rotateX}deg) rotateY(${tilt.rotateY}deg)`
+
   return (
     <div
       ref={ref}
@@ -38,7 +46,7 @@ export default function TiltCard({ children, className, style }: TiltCardProps) 
       onMouseLeave={handleMouseLeave}
       style={{
         ...style,
-        transform: `perspective(1000px) rotateX(${tilt.rotateX}deg) rotateY(${tilt.rotateY}deg)`,
+        transform,
         transition: 'transform 0.15s ease',
         transformStyle: 'preserve-3d',
       }}

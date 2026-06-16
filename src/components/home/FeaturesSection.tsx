@@ -81,7 +81,7 @@ export default function FeaturesSection() {
         </p>
         <h2 className="text-3xl sm:text-4xl font-bold text-text-primary mb-4">
           Everything a fundamental trader needs,{' '}
-          <span className="text-gradient-brand">nothing they don&apos;t.</span>
+          <span className="text-accent-blue">nothing they don&apos;t.</span>
         </h2>
         <p className="text-text-secondary max-w-xl mx-auto text-sm leading-relaxed">
           Built specifically for traders who research before they buy — not for algorithms

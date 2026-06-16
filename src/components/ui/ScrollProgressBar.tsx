@@ -20,16 +20,21 @@ export default function ScrollProgressBar() {
 
   return (
     <div
+      aria-hidden="true"
       style={{
         position: 'fixed',
         top: 0,
         left: 0,
         zIndex: 9999,
         height: 2,
-        width: `${progress}%`,
+        width: '100%',
+        transformOrigin: 'left',
+        transform: `scaleX(${progress / 100})`,
         background: 'linear-gradient(90deg, #2962ff, #7c4dff, #26a69a)',
         pointerEvents: 'none',
-        transition: 'width 0.05s linear',
+        // transform (not width) keeps this on the compositor — no layout thrash
+        transition: 'transform 0.1s linear',
+        willChange: 'transform',
       }}
     />
   )
