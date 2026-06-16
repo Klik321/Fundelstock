@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { useInView } from 'framer-motion'
+import { useInView, useReducedMotion } from 'framer-motion'
 
 interface AnimatedCounterProps {
   /** The final number to count to */
@@ -16,8 +16,13 @@ interface AnimatedCounterProps {
 }
 
 /**
- * Counts from 0 to `target` with a smooth easing animation
- * once the element enters the viewport.
+ * Counts up to `target` once the element enters the viewport.
+ *
+ * Robustness contract — the value is NEVER stuck at 0:
+ *  - SSR / no-JS / crawlers / OG previews render the real `target` (initial state).
+ *  - First client render also shows `target`, so there is no hydration mismatch.
+ *  - With motion allowed, the count-up runs from 0 → target when scrolled into view.
+ *  - With `prefers-reduced-motion`, we skip the animation and hold `target`.
  */
 export default function AnimatedCounter({
   target,
@@ -29,25 +34,28 @@ export default function AnimatedCounter({
 }: AnimatedCounterProps) {
   const ref = useRef<HTMLSpanElement>(null)
   const isInView = useInView(ref, { once: true, margin: '0px 0px -40px 0px' })
-  const [count, setCount] = useState(0)
+  const prefersReducedMotion = useReducedMotion()
+  // Initialise to target so SSR + first paint always show the real number.
+  const [count, setCount] = useState(target)
+  const hasAnimated = useRef(false)
 
   useEffect(() => {
-    if (!isInView) return
-
-    let raf: number
-    const startTime = performance.now()
-    const totalMs = duration * 1000
-
-    // Ease-out-cubic
-    function easeOutCubic(t: number) {
-      return 1 - Math.pow(1 - t, 3)
+    // Keep the real number for reduced-motion users — never animate.
+    if (prefersReducedMotion) {
+      setCount(target)
+      return
     }
+    if (!isInView || hasAnimated.current) return
+    hasAnimated.current = true
 
-    function tick(now: number) {
-      const elapsed = now - startTime
-      const progress = Math.min(elapsed / totalMs, 1)
-      const easedProgress = easeOutCubic(progress)
-      setCount(Math.floor(easedProgress * target))
+    let raf = 0
+    const startTime = performance.now()
+    const totalMs = Math.max(1, duration * 1000)
+    const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3)
+
+    const tick = (now: number) => {
+      const progress = Math.min((now - startTime) / totalMs, 1)
+      setCount(Math.round(easeOutCubic(progress) * target))
       if (progress < 1) {
         raf = requestAnimationFrame(tick)
       } else {
@@ -57,13 +65,15 @@ export default function AnimatedCounter({
 
     raf = requestAnimationFrame(tick)
     return () => cancelAnimationFrame(raf)
-  }, [isInView, target, duration])
+  }, [isInView, target, duration, prefersReducedMotion])
 
   const display = format ? count.toLocaleString() : count
 
   return (
     <span ref={ref} className={className}>
-      {prefix}{display}{suffix}
+      {prefix}
+      {display}
+      {suffix}
     </span>
   )
 }
